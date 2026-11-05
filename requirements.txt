@@ -1,0 +1,27 @@
+# Núcleo
+numpy>=1.26
+pandas>=2.1
+opencv-python>=4.9
+scikit-image>=0.22
+scikit-learn>=1.4
+xgboost>=2.0
+matplotlib>=3.8
+seaborn>=0.13
+tqdm>=4.66
+
+# Deep learning (CNN). En Windows sin GPU basta con la versión CPU:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch>=2.2
+torchvision>=0.17
+
+# Datos y despliegue
+kaggle>=1.8
+six  # dependencia faltante de kaggle 2.x
+streamlit>=1.35
+
+# Notebooks y pruebas
+jupyter
+nbformat
+nbclient
+ipykernel
+pytest

@@ -1,0 +1,24 @@
+# Entornos
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
+
+# Credenciales
+kaggle.json
+.env
+
+# Datos y modelos pesados (las etiquetas en data/labels/ SÍ se versionan)
+data/raw/**
+data/interim/**
+data/processed/**
+!data/**/.gitkeep
+models/*
+!models/.gitkeep
+
+# Sistema
+.DS_Store
+Thumbs.db
+~$*
