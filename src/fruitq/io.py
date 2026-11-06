@@ -20,6 +20,21 @@ def read_image(path: str | Path) -> np.ndarray:
     return img
 
 
+def read_image_max(path: str | Path, max_side: int = 256) -> np.ndarray:
+    """Lee una imagen y la reduce para que su lado mayor sea ``max_side``.
+
+    El dataset mezcla fotos de 256 px con fotos de 12-48 MP. Trabajar todas a la
+    misma escala hace comparables las características (p. ej. la varianza del
+    Laplaciano depende de la resolución) y acelera la segmentación.
+    """
+    img = read_image(path)
+    h, w = img.shape[:2]
+    s = max_side / max(h, w)
+    if s < 1:
+        img = cv2.resize(img, (round(w * s), round(h * s)), interpolation=cv2.INTER_AREA)
+    return img
+
+
 def write_image(path: str | Path, img: np.ndarray) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

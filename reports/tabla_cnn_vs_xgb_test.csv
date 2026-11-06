@@ -1,0 +1,4 @@
+modelo,accuracy,F1-macro,recall(mala),AUC
+CNN (lr1e-3_do0.5),0.9413,0.9397,0.9389,0.9832
+XGBoost,0.9654,0.9642,0.9504,0.9901
+Ensamble CNN+XGB,0.9638,0.9626,0.9552,0.9911

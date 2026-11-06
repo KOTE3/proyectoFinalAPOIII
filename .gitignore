@@ -22,3 +22,7 @@ models/*
 .DS_Store
 Thumbs.db
 ~$*
+*.zip
+
+# Configuracion local del editor
+.claude/

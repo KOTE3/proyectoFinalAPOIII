@@ -82,7 +82,7 @@ python scripts/download_data.py
 python scripts/segment_mixed.py --input data/raw/kaggle --output data/interim/segmentadas
 ```
 
-Ver [`data/README.md`](data/README.md) para el protocolo de recolección y etiquetado de las fotos propias.
+Ver [`data/README.md`](data/README.md) para el protocolo de recolección de fotos propias y [`docs/ETIQUETADO.md`](docs/ETIQUETADO.md) para etiquetar los recortes (`streamlit run app/etiquetar.py`).
 
 ## Referencias de terceros
 

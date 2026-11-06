@@ -1,0 +1,24 @@
+{
+  "tag": "lr1e-3_do0.3",
+  "params": 72434,
+  "mejor_epoca": 18,
+  "epocas": 20,
+  "f1_val": 0.9314889613059931,
+  "f1_test": 0.9456725771974226,
+  "auc_test": 0.984786546057344,
+  "ms_por_imagen_lote": 5.0701539370407325,
+  "min_total": 35.0391366481781,
+  "args": {
+    "tag": "lr1e-3_do0.3",
+    "epochs": 20,
+    "epoch_size": 6000,
+    "batch": 64,
+    "lr": 0.001,
+    "wd": 0.0001,
+    "dropout": 0.3,
+    "widths": "16,32,64",
+    "patience": 6,
+    "threads": 4,
+    "max_train": 0
+  }
+}
