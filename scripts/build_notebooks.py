@@ -248,7 +248,7 @@ fig, ax = plt.subplots(figsize=(5.5, 4))
 for c, col in (("buena", "#4C9A2A"), ("mala", "#B23A48")):
     m = (y == c).values
     ax.scatter(Z[m, 0], Z[m, 1], s=10, alpha=0.6, label=c, color=col)
-ax.set_xlabel("PC1"); ax.set_ylabel("PC2"); ax.legend(); ax.set_title("PCA de las 62 características manuales")
+ax.set_xlabel("PC1"); ax.set_ylabel("PC2"); ax.legend(); ax.set_title("PCA de las 57 características manuales")
 savefig("eda_pca"); plt.show()
 """),
         md("""
@@ -274,7 +274,7 @@ def modelos_clasicos_notebook() -> nbf.NotebookNode:
         md(r"""
 # Fase 4 — Modelado con ML clásico (características manuales)
 
-**Tarea:** clasificación binaria buena (0) / mala (1) con las 62 características de `fruitq.features`, extraídas de la fruta principal segmentada (`scripts/extract_features.py`). La clase `regular` se agrega después a partir de la probabilidad $P(\text{mala}\mid x)$ (sección 6).
+**Tarea:** clasificación binaria buena (0) / mala (1) con las 57 características de `fruitq.features`, extraídas de la fruta principal segmentada (`scripts/extract_features.py`). La clase `regular` se agrega después a partir de la probabilidad $P(\text{mala}\mid x)$ (sección 6).
 
 **Modelos**
 | Modelo | Por qué se prueba |

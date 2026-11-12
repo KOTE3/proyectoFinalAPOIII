@@ -4,10 +4,10 @@
 | Tipo | Modelo | Entrada | Hiperparámetros buscados |
 |---|---|---|---|
 | Piso | Clase mayoritaria | — | — |
-| Línea base | Regresión logística | 62 características | `C` ∈ {0.01, 0.1, 1, 10} |
-| ML clásico | SVM (RBF) | 62 características | `C` ∈ {0.3, 1, 3, 10, 30}, `γ` ∈ {scale, 0.003, 0.01, 0.03} |
-| ML clásico | Random Forest (300 árboles) | 62 características | `max_depth` ∈ {∞, 20, 10}, `min_samples_leaf` ∈ {1, 3, 10}, `max_features` ∈ {√d, 0.3} |
-| ML clásico | XGBoost (400 árboles) | 62 características | `max_depth` ∈ {3, 5, 7}, `learning_rate` ∈ {0.05, 0.1} |
+| Línea base | Regresión logística | 57 características | `C` ∈ {0.01, 0.1, 1, 10} |
+| ML clásico | SVM (RBF) | 57 características | `C` ∈ {0.3, 1, 3, 10, 30}, `γ` ∈ {scale, 0.003, 0.01, 0.03} |
+| ML clásico | Random Forest (300 árboles) | 57 características | `max_depth` ∈ {∞, 20, 10}, `min_samples_leaf` ∈ {1, 3, 10}, `max_features` ∈ {√d, 0.3} |
+| ML clásico | XGBoost (400 árboles) | 57 características | `max_depth` ∈ {3, 5, 7}, `learning_rate` ∈ {0.05, 0.1} |
 | Deep learning | CNN pequeña desde cero (72 434 parámetros) | Recorte enmascarado 128×128 | `lr` ∈ {1e-3, 3e-4}, `dropout` ∈ {0.3, 0.5} |
 
 - **Tarea actual:** binaria buena (0) / mala (1). La clase `regular` se obtiene después con umbrales sobre P(mala | x), ver la sección "De 2 a 3 clases".
@@ -32,7 +32,7 @@
 
 | Características | F1 val |
 |---|---|
-| Todas (62) | 0.957 |
+| Todas (57) | 0.957 |
 | Sin nitidez/textura (`laplacian_var`, `gradient_energy`) | 0.943 |
 | Solo color (histogramas y momentos HSV/Lab) | 0.942 |
 | Solo nitidez/textura (2) | 0.715 |

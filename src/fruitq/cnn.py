@@ -6,8 +6,8 @@ fondo evita que la red aprenda atajos del entorno (pasto, manos, mesa).
 
 Arquitectura (``SmallCNN``): 3 bloques
     [Conv 3x3 -> BatchNorm -> ReLU] x 2 -> MaxPool 2x2
-con 32, 64 y 128 filtros, seguidos de Global Average Pooling, Dropout y
-una capa densa de salida.
+con anchos configurables (el modelo final usa 16, 32 y 64 filtros), seguidos
+de Global Average Pooling, Dropout y una capa densa de salida.
 
 - La convolución 3x3 comparte pesos en toda la imagen (equivarianza a
   traslaciones): el mismo detector de "mancha" funciona en cualquier lugar.
@@ -18,11 +18,12 @@ una capa densa de salida.
 - BatchNorm normaliza las activaciones de cada canal en el lote, lo que
   estabiliza y acelera el entrenamiento.
 - El Global Average Pooling (promedio por canal) reemplaza a un Flatten
-  grande: ~0.29 M parámetros en total, lo que reduce el sobreajuste.
+  grande: 72 434 parámetros en total con anchos (16, 32, 64), lo que reduce
+  el sobreajuste.
 
-Pérdida: entropía cruzada ponderada
-    L = - (1 / sum_i w_i) * sum_i w_i * log softmax(z_i)[y_i]
-con w_i el peso del estrato fruta×calidad de la muestra i.
+Pérdida: entropía cruzada. El desbalanceo se compensa en el muestreo: cada
+época toma muestras de train con probabilidad proporcional a 1/N_estrato
+(ver scripts/train_cnn.py).
 """
 
 from __future__ import annotations

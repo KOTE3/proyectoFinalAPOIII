@@ -72,7 +72,7 @@ Accuracy 0.965 · AUC 0.990. El F1 de test (0.964) coincide con el de validació
 | naranja | 0.798 | 0.919 | **0.963** | 0.927 |
 
 **¿Por qué gana el modelo clásico?**
-1. Las 62 características ya resumen justo lo que importa (color y textura), y el modelo clásico las aprovecha con los 12 269 ejemplos de train.
+1. Las 57 características ya resumen justo lo que importa (color y textura), y el modelo clásico las aprovecha con los 12 269 ejemplos de train.
 2. Una CNN de 72 mil parámetros entrenada desde cero, en CPU y durante 20 épocas, tiene que aprender esos detectores sola, y las curvas muestran que todavía no había convergido.
 3. Las características incluyen la nitidez de la imagen original, que puede ser un atajo de la cámara (ver la ablación en la fase 4). La CNN ve un recorte reducido a 128 px, donde esa señal casi desaparece.
 

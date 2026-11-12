@@ -4,7 +4,7 @@ Para cada imagen:
   1. Se reduce a 256 px de lado mayor (misma escala para todas).
   2. Se segmenta y se toma la fruta de mayor área. Si no se detecta ninguna,
      se usa la imagen completa y se marca seg_ok = False.
-  3. Se calcula el vector de 62 características (fruitq.features) y el
+  3. Se calcula el vector de 57 características (fruitq.features) y el
      diámetro normalizado.
 
 Se ejecuta en paralelo (joblib) y guarda data/processed/features.parquet.

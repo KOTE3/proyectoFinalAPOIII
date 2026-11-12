@@ -31,6 +31,9 @@ Para compartir las fotos con la clase usar la carpeta común acordada (Drive / r
 
 ## Protocolo de recolección
 
+Resumen; el protocolo completo (montaje, configuración de la cámara, obtención de las tres calidades y verificación) está en [`docs/PLAN_DE_TRABAJO.md`](../docs/PLAN_DE_TRABAJO.md#4-protocolo-de-toma-de-fotografías).
+
+
 1. **Una fruta por foto**, centrada, sobre fondo **uniforme y sin textura** (cartulina blanca o negra).
 2. **Distancia fija** de la cámara (~30 cm, el celular apoyado en una caja o en un libro) para que el tamaño en píxeles sea comparable entre fotos.
 3. Luz difusa, sin flash directo ni sombras fuertes (cerca de una ventana, de día).
@@ -57,11 +60,15 @@ Para compartir las fotos con la clase usar la carpeta común acordada (Drive / r
 |---|---|
 | `archivo` | Ruta relativa a `data/raw/propias/` |
 | `id_fruta` | Identificador de la fruta física (p. ej. `ban_03`); igual en varias fotos de la misma fruta |
-| `fruta` | manzana, tomate, banano, … |
+| `fruta` | manzana / banano / guayaba |
 | `calidad` | buena / regular / mala |
-| `tamano` | pequeno / mediano / grande |
-| `defecto` | ninguno / mancha / golpe / podredumbre / moho / otro |
+| `tamano` | pequeno / mediano / grande; se calcula por terciles de `medida_cm` dentro de cada fruta |
+| `medida_cm` | Medida con regla: diámetro mayor (manzana, guayaba) o largo de punta a punta (banano) |
+| `defecto` | ninguno / mancha / golpe / podredumbre / moho / arrugas / otro |
 | `fuente` | casa / supermercado / plaza |
+| `celular` | Marca y modelo del celular usado |
+| `moneda` | si / no: la foto incluye la moneda de 500 pesos de referencia |
+| `conjunto` | principal (entrenamiento y evaluación) / prueba_camara (solo prueba de generalización a otro celular) |
 | `autor` | Integrante que tomó la foto |
 | `fecha` | AAAA-MM-DD |
-| `notas` | Observaciones libres |
+| `notas` | Observaciones libres; diámetro medido de la moneda cuando aparece |
