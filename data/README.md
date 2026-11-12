@@ -16,28 +16,27 @@ Para compartir las fotos con la clase usar la carpeta común acordada (Drive / r
 
 **Frutas:** se eligen **3 de las 6 que trae Kaggle**, para que las fotos propias complementen al dataset y sirvan para medir la generalización: **banano, manzana y guayaba**. Son baratas, se consiguen todo el año en Colombia y se dañan rápido, así que es fácil tener las tres calidades. La naranja y el limón sirven de reemplazo; la granada es difícil de conseguir.
 
-**Cantidad: 63 fotos (3 frutas × 3 calidades × 7 frutas distintas)**
+**Cantidad: 45 fotos de 15 frutas físicas.** Son 5 frutas de cada tipo, y cada una se fotografía en sus tres estados (`buena` → `regular` → `mala`) a medida que se deteriora.
 
-| | buena | regular | mala | Total |
-|---|---|---|---|---|
-| Banano | 7 | 7 | 7 | 21 |
-| Manzana | 7 | 7 | 7 | 21 |
-| Guayaba | 7 | 7 | 7 | 21 |
+| | Frutas físicas | buena | regular | mala | Total |
+|---|---|---|---|---|---|
+| Banano | 5 | 5 | 5 | 5 | 15 |
+| Manzana | 5 | 5 | 5 | 5 | 15 |
+| Guayaba | 5 | 5 | 5 | 5 | 15 |
 
-- Dentro de cada celda, variar el tamaño: unas pequeñas, unas medianas y unas grandes.
-- **Cada foto es una fruta física distinta.** Si se toman 2 ángulos de la misma fruta, ambas fotos llevan el mismo `id_fruta` (así nunca quedan una en train y otra en test).
-- Para conseguir `mala` sin gastar: comprar algunas frutas maduras o golpeadas (en la plaza son más baratas) y dejar unas cuantas 3–5 días fuera de la nevera. Fotografiar el mismo lote el día 0 (`buena`), el día 2–3 (`regular`) y el día 5 (`mala`) también vale; en ese caso se usa el **mismo `id_fruta`** en todos los días, para que la misma fruta no quede repartida entre train y test.
-- En **5–10 fotos** poner una **moneda de 500** junto a la fruta (medir su diámetro con regla y anotarlo) para convertir píxeles a centímetros.
+- Las 5 frutas de cada tipo se eligen de tamaños distintos (pequeñas, medianas y grandes).
+- Las tres fotos de una misma fruta llevan el **mismo `id_fruta`**, para que nunca queden repartidas entre train y test.
+- En 2–3 fotos por fruta se pone una **moneda de 500** junto a la fruta. Su diámetro se mide con regla y se anota, para convertir píxeles a centímetros.
+- Además, los integrantes 2 y 3 toman 5–10 fotos cada uno con su propio celular (`conjunto = prueba_camara`). Esas fotos solo se usan para evaluar la generalización a otras cámaras.
 
 ## Protocolo de recolección
 
 Resumen; el protocolo completo (montaje, configuración de la cámara, obtención de las tres calidades y verificación) está en [`docs/PLAN_DE_TRABAJO.md`](../docs/PLAN_DE_TRABAJO.md#4-protocolo-de-toma-de-fotografías).
 
-
 1. **Una fruta por foto**, centrada, sobre fondo **uniforme y sin textura** (cartulina blanca o negra).
 2. **Distancia fija** de la cámara (~30 cm, el celular apoyado en una caja o en un libro) para que el tamaño en píxeles sea comparable entre fotos.
 3. Luz difusa, sin flash directo ni sombras fuertes (cerca de una ventana, de día).
-4. Nombre de archivo: `<fruta>_<calidad>_<nnn>.jpg`, p. ej. `guayaba_mala_007.jpg`.
+4. Nombre de archivo: `<fruta>_<calidad>_<nn>.jpg`, con `nn` igual al número de la fruta física. Por ejemplo, `guayaba_mala_03.jpg` corresponde a `gua_03`.
 5. **No fotografiar personas, caras, placas ni datos de los vendedores.** Pedir permiso antes de tomar fotos en plazas o supermercados.
 
 ## Definición de etiquetas

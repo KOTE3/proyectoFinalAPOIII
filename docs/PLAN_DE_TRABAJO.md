@@ -13,7 +13,7 @@ Documento de coordinación interna: estado del proyecto, reparto de tareas, prot
 | Herramienta de etiquetado | Completa | `app/etiquetar.py`, `docs/ETIQUETADO.md` |
 | Modelos clásicos (regresión logística, SVM, Random Forest, XGBoost) | Completo (2 clases) | `notebooks/04_modelos_clasicos.ipynb` |
 | CNN desde cero y comparación con XGBoost | Completo (2 clases) | `notebooks/05_cnn_y_comparacion.ipynb` |
-| **Fotografías propias (63)** | **Pendiente** | Sección 4 de este documento |
+| **Fotografías propias (45)** | **Pendiente** | Sección 4 de este documento |
 | **Etiquetado de recortes (clase `regular`)** | **Pendiente** | `docs/ETIQUETADO.md` |
 | Paso de 2 a 3 clases y estimación de tamaño en cm | Pendiente (depende de lo anterior) | — |
 | Aplicación Streamlit con cámara | Pendiente | `app/` |
@@ -30,17 +30,17 @@ Resultado actual (test, 2 540 imágenes, clases buena/mala): XGBoost obtiene F1-
 
 | Tarea | Sebastián Mejía | Integrante 2 | Integrante 3 |
 |---|---|---|---|
-| Fotografías (sección 4) | **Conjunto principal**: 63 fotos de las 3 frutas | **Prueba de cámara**: 5–10 fotos con su celular | **Prueba de cámara**: 5–10 fotos con su celular |
+| Fotografías (sección 4) | **Conjunto principal**: 45 fotos de las 3 frutas | **Prueba de cámara**: 5–10 fotos con su celular | **Prueba de cámara**: 5–10 fotos con su celular |
 | Etiquetado de recortes | Parte 1 | Parte 2 | Parte 3 |
 | Recortes en común (acuerdo entre etiquetadores) | 50 de la parte 2 | 50 de la parte 3 | 50 de la parte 1 |
-| Filas en `data/labels/anotaciones_propias.csv` | Las 63 del conjunto principal | Las de sus fotos de prueba | Las de sus fotos de prueba |
+| Filas en `data/labels/anotaciones_propias.csv` | Las 45 del conjunto principal | Las de sus fotos de prueba | Las de sus fotos de prueba |
 
 - Meta de etiquetado: **unos 200 recortes válidos por persona** (20–30 minutos). Los recortes aparecen en orden aleatorio, así que cualquier cantidad etiquetada es una muestra representativa; más etiquetas mejoran la estimación de la clase `regular`.
 - Los criterios de calidad son los mismos para fotos y recortes (sección 4.6).
 
 ### Sebastián Mejía — responsable técnico
 
-- Toma de las 63 fotografías del conjunto principal (sección 4).
+- Toma de las 45 fotografías del conjunto principal (sección 4).
 - Integrar las fotos propias al flujo de datos y verificar su segmentación.
 - Pasar de 2 a 3 clases (umbrales calibrados sobre P(mala | x) con los recortes etiquetados como `regular`).
 - Calibrar el tamaño en centímetros con la moneda de referencia y validarlo contra las medidas con regla.
@@ -85,23 +85,28 @@ Resultado actual (test, 2 540 imágenes, clases buena/mala): XGBoost obtiene F1-
 5. Grabación del video con la aplicación terminada.
 6. Revisión final contra la rúbrica de INTU.
 
-La fecha de entrega se confirma en INTU. Las fotografías deben estar listas como máximo una semana después de iniciar este plan, porque la fruta tarda varios días en pasar de `buena` a `mala`.
+La fecha de entrega se confirma en INTU. Las fotografías toman unos 10 días desde la compra de la fruta, porque cada fruta se fotografía mientras pasa de `buena` a `mala` (sección 4.4). Conviene comprarla cuanto antes.
 
 ## 4. Protocolo de toma de fotografías
 
 ### 4.1 Cantidad y distribución
 
-**Conjunto principal (Sebastián Mejía): 63 fotos, 21 por fruta.**
+**Conjunto principal (Sebastián Mejía): 45 fotos de 15 frutas físicas.**
 
-| Fruta | buena | regular | mala | Total |
-|---|---|---|---|---|
-| Manzana | 7 | 7 | 7 | 21 |
-| Banano | 7 | 7 | 7 | 21 |
-| Guayaba | 7 | 7 | 7 | 21 |
+Se compran **5 frutas de cada tipo** y cada una se fotografía **tres veces**, a medida que se deteriora: una foto como `buena`, otra como `regular` y otra como `mala`.
 
-- Dentro de cada celda: 2 pequeñas, 3 medianas y 2 grandes.
-- El enunciado pide 30–50 fotos como mínimo; el margen permite descartar fotos defectuosas.
-- Se recomiendan **al menos 10 frutas físicas distintas por tipo**. Una misma fruta puede fotografiarse en varios días mientras se deteriora (sección 4.4).
+| Fruta | Frutas físicas | buena | regular | mala | Total |
+|---|---|---|---|---|---|
+| Manzana | 5 | 5 | 5 | 5 | 15 |
+| Banano | 5 | 5 | 5 | 5 | 15 |
+| Guayaba | 5 | 5 | 5 | 5 | 15 |
+| **Total** | **15** | **15** | **15** | **15** | **45** |
+
+- Las 5 frutas de cada tipo se eligen de tamaños distintos: 2 pequeñas, 2 medianas y 1 grande, o una combinación similar.
+- 45 fotos están dentro del rango de 30–50 que pide el enunciado. Si una foto sale defectuosa, se repite el mismo día.
+- **Ventaja del seguimiento.** La misma fruta aparece en los tres estados, así que la diferencia entre `buena`, `regular` y `mala` se debe solo al deterioro y no a que sean frutas distintas.
+- Las tres fotos de una fruta comparten el mismo `id_fruta`, de modo que nunca quedan repartidas entre entrenamiento y prueba.
+- **Identificación de cada fruta.** Cada fruta se guarda sobre un papel con su número (`ban_01`, `ban_02`, …). Si se marca la fruta, la marca va en la cara que no mira a la cámara. Ningún papel, cinta ni marca debe aparecer en la foto.
 
 **¿Por qué una sola persona toma el conjunto principal?**
 - Todas las fotos comparten celular, montaje, luz y criterio de calidad.
@@ -155,18 +160,19 @@ La fecha de entrega se confirma en INTU. Las fotografías deben estar listas com
 
 ### 4.4 Cómo obtener las tres calidades
 
-| Fruta | buena | regular | mala |
+| Fruta | Foto `buena` | Foto `regular` | Foto `mala` |
 |---|---|---|---|
-| Banano | Día 0: amarillo, firme, pocas pecas | Día 3–4: muchas pecas cafés, zonas algo blandas | Día 6–8: cáscara mayormente negra, aplastado, rajado o con moho |
+| Banano | Día 0: amarillo, firme, pocas pecas | Día 3–4: muchas pecas cafés, zonas algo blandas | Día 6–8: cáscara mayormente negra, blando, rajado o con moho |
 | Guayaba | Día 0: color uniforme, firme | Día 2–3: manchas pequeñas oscuras, algo blanda | Día 5–6: manchas negras grandes, zonas hundidas, podredumbre o moho |
-| Manzana | Piel lisa y brillante, sin golpes | Golpe o mancha menor de ~1 cm, piel levemente arrugada | Zonas cafés blandas, moho, piel muy arrugada o cortes profundos |
+| Manzana | Día 0: piel lisa y brillante, sin golpes | Día 1–2 después de un golpe leve contra una superficie dura: mancha menor de ~1 cm | Día 7–10 después de un golpe fuerte o un pinchazo pequeño en la piel: zonas cafés blandas o moho |
 
-- Banano y guayaba: mantener el lote a temperatura ambiente, fuera de la nevera, y fotografiar en los días indicados. Si la misma fruta aparece en varios días, **conserva el mismo `id_fruta`**. Así, la misma fruta física nunca queda a la vez en entrenamiento y en prueba.
-- Manzana: se deteriora en 2–3 semanas, demasiado lento para el plazo. Para `regular` y `mala`, comprar unidades ya golpeadas o maduras (en la plaza son más baratas). Otra opción es golpear levemente una manzana contra una superficie dura y fotografiarla 1–2 días después, cuando aparezca la mancha.
+- Todas las frutas se mantienen a temperatura ambiente, fuera de la nevera.
+- La manzana sana se deteriora en 2–3 semanas, demasiado lento para el plazo; el golpe y el pinchazo aceleran el proceso. Tras la foto `buena`, se golpea levemente. Tras la foto `regular`, se golpea con fuerza o se pincha la piel en la misma zona.
+- Antes de cada foto, revisar el criterio de la sección 4.6. Si una fruta todavía no se ve `regular` o `mala`, se espera uno o dos días más. El día exacto importa menos que el estado visible.
 
 ### 4.5 Nombres de archivo
 
-`<fruta>_<calidad>_<nnn>.jpg`, con numeración consecutiva por fruta de 001 a 021 o más. Ejemplos: `manzana_buena_001.jpg`, `banano_mala_017.jpg`. Las fotos de prueba de cámara llevan el prefijo `prueba_` y el nombre del autor: `prueba_<autor>_<fruta>_<calidad>_<nn>.jpg`. Todo en minúsculas, sin tildes ni espacios.
+`<fruta>_<calidad>_<nn>.jpg`, donde `nn` es el número de la fruta física (01–05) y coincide con su `id_fruta`. Por ejemplo, la guayaba `gua_03` produce `guayaba_buena_03.jpg`, `guayaba_regular_03.jpg` y `guayaba_mala_03.jpg`. Una toma adicional desde otro ángulo lleva el sufijo `_b`: `guayaba_mala_03_b.jpg`. Las fotos de prueba de cámara llevan el prefijo `prueba_` y el nombre del autor: `prueba_<autor>_<fruta>_<calidad>_<nn>.jpg`. Todo en minúsculas, sin tildes ni espacios.
 
 ### 4.6 Criterios de calidad (comunes a fotos y recortes)
 
@@ -184,7 +190,7 @@ Una fila por foto:
 
 | Columna | Contenido | Ejemplo |
 |---|---|---|
-| `archivo` | Nombre del archivo | `manzana_regular_009.jpg` |
+| `archivo` | Nombre del archivo | `manzana_regular_04.jpg` |
 | `id_fruta` | Identificador de la fruta física: 3 letras + número | `man_04` |
 | `fruta` | manzana / banano / guayaba | `manzana` |
 | `calidad` | buena / regular / mala | `regular` |
@@ -207,7 +213,8 @@ Una fila por foto:
 
 ### 4.9 Verificación antes de entregar
 
-- [ ] Conjunto principal: 63 fotos, 21 por fruta (7 buenas, 7 regulares y 7 malas).
+- [ ] Conjunto principal: 45 fotos, 15 por fruta (5 frutas físicas × 3 estados).
+- [ ] Cada fruta tiene sus tres fotos con el mismo `id_fruta` y en ninguna aparece el papel o la marca de identificación.
 - [ ] En ninguna foto se ve la mesa, el borde de la cartulina, manos ni otros objetos.
 - [ ] La fruta no toca el borde de la foto.
 - [ ] Ninguna foto está movida, tiene flash o reflejos fuertes.
@@ -222,7 +229,7 @@ Una fila por foto:
 2. Agregar solo los archivos propios. Por ejemplo: `git add data/labels/recortes_<nombre>.csv`. No usar `git add -A` sobre cambios de otros.
 3. `git commit -m "<descripción breve>"` y luego `git push`.
 4. Si `git push` es rechazado, hacer `git pull` y repetir.
-5. No subir imágenes, archivos `.zip`, modelos (`models/`) ni configuraciones locales de editores. Todo eso ya está en `.gitignore`.
+5. No subir imágenes, archivos `.zip`, modelos de prueba ni configuraciones locales de editores. Todo eso ya está en `.gitignore`; de `models/` solo se versionan los dos modelos finales.
 6. Cada integrante envía su nombre completo y su código para la tabla de integrantes del `README.md`.
 
 ## 6. Video (máximo 10 minutos)
