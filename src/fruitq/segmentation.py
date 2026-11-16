@@ -25,7 +25,9 @@ la segmentación se hace en tres etapas:
    de distancia: cada máximo local de la distancia al borde de la máscara se
    toma como el "centro" de una fruta.
 
-Para fotos propias con fondo realmente uniforme basta la etapa 1.
+Las fotos propias (cartulina blanca, una fruta por foto) usan
+``fruit_on_uniform_background``, que decide por croma respecto al fondo y así
+deja fuera la sombra de la fruta y la moneda de referencia.
 """
 
 from __future__ import annotations
@@ -238,6 +240,70 @@ def largest_fruit(img_bgr: np.ndarray) -> FruitRegion | None:
     """La fruta de mayor área (caso de uso normal: una fruta por foto)."""
     regions = find_fruits(img_bgr, split=False)
     return regions[0] if regions else None
+
+
+def fruit_on_uniform_background(
+    img_bgr: np.ndarray,
+    border: float = 0.05,
+    min_chroma: float = 8.0,
+    dark_ratio: float = 0.3,
+    pad: int = 6,
+    min_area_frac: float = 0.002,
+    max_border_frac: float = 0.25,
+) -> FruitRegion | None:
+    """Fruta principal en una foto del protocolo propio (fondo blanco o gris uniforme).
+
+    En una cartulina blanca o gris, las sombras cambian la luminosidad L pero
+    casi no el color. Por eso aquí la decisión se basa en la **croma respecto
+    al fondo**:
+
+        C(x) = sqrt((a(x) - a_0)^2 + (b(x) - b_0)^2),
+
+    donde (a_0, b_0) es la mediana del borde de la imagen en Lab. Un píxel es
+    fruta si C(x) supera un umbral, o si es mucho más oscuro que el fondo
+    (L < ``dark_ratio`` · L_0), para conservar zonas negras de podredumbre.
+    La sombra (gris claro) y la moneda de referencia (gris metálico) quedan
+    fuera.
+
+    Después se conserva la componente conexa más grande y se rellenan todos
+    sus huecos: en una foto con una sola fruta, cualquier hueco interno
+    (manchas, cavidad del pedúnculo) pertenece a la fruta.
+    """
+    h, w = img_bgr.shape[:2]
+    lab = cv2.cvtColor(cv2.medianBlur(img_bgr, 5), cv2.COLOR_BGR2LAB).astype(np.float32)
+    L, a, b = lab[..., 0], lab[..., 1], lab[..., 2]
+    k = max(2, int(border * min(h, w)))
+    ring = np.zeros((h, w), bool)
+    ring[:k], ring[-k:], ring[:, :k], ring[:, -k:] = True, True, True, True
+    a0, b0, L0 = np.median(a[ring]), np.median(b[ring]), np.median(L[ring])
+    chroma = np.hypot(a - a0, b - b0)
+    t = max(min_chroma, 3.0 * float(np.percentile(chroma[ring], 99)))
+    mask = (((chroma > t) | (L < dark_ratio * L0)) * 255).astype(np.uint8)
+
+    ks = max(3, int(0.01 * min(h, w)) | 1)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (ks, ks))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours = [c for c in contours
+                if cv2.contourArea(c) >= min_area_frac * h * w and _border_fraction(c, h, w) <= max_border_frac]
+    if not contours:
+        return None
+    c = max(contours, key=cv2.contourArea)
+    single = np.zeros((h, w), np.uint8)
+    cv2.drawContours(single, [c], -1, 255, thickness=cv2.FILLED)  # relleno completo: sin huecos
+
+    x, y, bw, bh = cv2.boundingRect(c)
+    x0, y0 = max(x - pad, 0), max(y - pad, 0)
+    x1, y1 = min(x + bw + pad, w), min(y + bh + pad, h)
+    return FruitRegion(
+        mask=single[y0:y1, x0:x1],
+        crop=img_bgr[y0:y1, x0:x1].copy(),
+        bbox=(x0, y0, x1 - x0, y1 - y0),
+        area=float(cv2.contourArea(c)),
+        contour=c,
+    )
 
 
 def apply_mask(img_bgr: np.ndarray, mask: np.ndarray, bg: int = 0) -> np.ndarray:

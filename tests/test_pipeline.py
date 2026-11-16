@@ -46,3 +46,19 @@ def test_features_shape():
     f = extract_features(fruit.crop, fruit.mask)
     assert f.shape == (len(feature_names()),)
     assert np.isfinite(f).all()
+
+
+def test_uniform_background_ignores_shadow_and_coin():
+    """En el protocolo propio: la sombra gris y la moneda no forman parte de la fruta."""
+    from fruitq.segmentation import fruit_on_uniform_background
+
+    img = synthetic(bg=(235, 235, 235), circles=())
+    cv2.ellipse(img, (210, 230), (85, 40), 0, 0, 360, (150, 150, 150), -1)  # sombra gris
+    cv2.circle(img, (200, 200), 80, (40, 160, 220), -1)                      # fruta amarilla
+    cv2.circle(img, (450, 200), 25, (120, 125, 125), -1)                     # moneda gris
+    fruit = fruit_on_uniform_background(img)
+    assert fruit is not None
+    expected = math.pi * 80**2
+    assert abs(fruit.area - expected) / expected < 0.05
+    x, y, w, h = fruit.bbox
+    assert x + w < 400  # la moneda queda fuera
