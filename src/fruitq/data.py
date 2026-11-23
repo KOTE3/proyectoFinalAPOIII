@@ -32,6 +32,7 @@ más de 8000. Ver docs/fases/03_preparacion_datos.md.
 from __future__ import annotations
 
 import hashlib
+from io import StringIO
 import re
 from pathlib import Path
 
@@ -41,6 +42,7 @@ import pandas as pd
 from sklearn.model_selection import StratifiedGroupKFold
 
 from .config import SEED
+from .io import resolve_path
 
 
 # --------------------------------------------------------------------------
@@ -49,7 +51,7 @@ from .config import SEED
 
 def image_signature(path: str) -> dict:
     """aHash de 64 bits, MD5 del archivo y bandera de escala de grises."""
-    raw = np.fromfile(path, dtype=np.uint8)
+    raw = np.fromfile(str(resolve_path(path)), dtype=np.uint8)
     # IMREAD_REDUCED_COLOR_4 decodifica a 1/4 de resolución: mucho más rápido
     # con las fotos de 12-48 MP y suficiente para un hash de 8x8.
     img = cv2.imdecode(raw, cv2.IMREAD_REDUCED_COLOR_4)
@@ -190,3 +192,49 @@ def check_no_leakage(df: pd.DataFrame, group_col: str = "grupo", split_col: str 
     bad = n_splits[n_splits > 1]
     if len(bad):
         raise AssertionError(f"{len(bad)} grupos aparecen en más de un subconjunto")
+
+
+# --------------------------------------------------------------------------
+# Anotaciones propias
+# --------------------------------------------------------------------------
+
+def read_annotations(path: str | Path) -> pd.DataFrame:
+    """Lee ``data/labels/anotaciones_propias.csv`` tal como lo deje Excel.
+
+    Formato del archivo (una fila por foto): ``archivo``, ``id_fruta``,
+    ``fruta``, ``calidad`` y ``tamaño``. La última columna es la medida con
+    regla, escrita con su unidad (p. ej. ``14.5 cm`` o ``7,5 cm``).
+
+    El archivo se edita en Excel con configuración regional en español, que
+    guarda los CSV con separador ``;``, coma decimal y, según la opción
+    elegida, codificación UTF-8 o Windows-1252. La función acepta esas
+    variantes y devuelve columnas normalizadas:
+
+    - ``medida_cm``: número en centímetros, leído de ``tamaño``/``tamano``
+      (o de ``medida_cm`` si existe), con coma o punto decimal;
+    - ``conjunto``: ``prueba_camara`` si el archivo empieza por ``prueba_``
+      (fotos tomadas con otro celular) y ``principal`` en otro caso.
+    """
+    raw = Path(path).read_bytes()
+    try:
+        text = raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = raw.decode("cp1252")
+    header = text.splitlines()[0] if text else ""
+    sep = ";" if header.count(";") > header.count(",") else ","
+    df = pd.read_csv(StringIO(text), sep=sep, dtype=str, keep_default_na=False)
+    df.columns = df.columns.str.strip().str.lower()
+    df = df.loc[:, df.columns != ""]
+    for col in ("archivo", "id_fruta", "fruta", "calidad"):
+        if col in df.columns:
+            df[col] = df[col].str.strip().str.lower() if col != "archivo" else df[col].str.strip()
+
+    medida = next((c for c in ("medida_cm", "tamaño", "tamano") if c in df.columns), None)
+    if medida is not None:
+        numero = df[medida].str.extract(r"(\d+(?:[.,]\d+)?)", expand=False).str.replace(",", ".", regex=False)
+        df["medida_cm"] = pd.to_numeric(numero, errors="coerce")
+        if medida != "medida_cm":
+            df = df.drop(columns=medida)
+    if "conjunto" not in df.columns:
+        df["conjunto"] = np.where(df["archivo"].str.startswith("prueba_"), "prueba_camara", "principal")
+    return df

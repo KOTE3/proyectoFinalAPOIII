@@ -23,7 +23,7 @@ from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from fruitq.io import list_images, read_image, write_image  # noqa: E402
+from fruitq.io import list_images, project_path, read_image, write_image  # noqa: E402
 from fruitq.segmentation import find_fruits  # noqa: E402
 from fruitq.size import normalized_diameter  # noqa: E402
 
@@ -52,8 +52,8 @@ def main() -> None:
             write_image(out, r.crop)
             write_image(out.with_name(f"{path.stem}_f{k}_mask.png"), r.mask)
             rows.append({
-                "origen": str(path),
-                "recorte": str(out),
+                "origen": project_path(path),
+                "recorte": project_path(out),
                 "fruta_idx": k,
                 "x": r.bbox[0], "y": r.bbox[1], "w": r.bbox[2], "h": r.bbox[3],
                 "area_px": r.area,

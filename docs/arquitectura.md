@@ -23,7 +23,7 @@ La rama de XGBoost es el modelo principal: tiene el mejor F1-macro en test (0.96
 
 Estado de los bloques:
 - **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala.
-- **Pendientes:** los umbrales de 3 clases (dependen de las etiquetas `regular`), la conversión a centímetros (depende de las fotos con moneda) y la interfaz.
+- **Pendientes:** los umbrales de 3 clases (dependen de las etiquetas `regular`), la conversión a centímetros (se calibra con las medidas con regla de las fotos propias) y la interfaz.
 
 ## 2. Segmentación (`src/fruitq/segmentation.py`)
 
@@ -79,7 +79,7 @@ Entrenamiento:
 - Diámetro equivalente: $d = 2\sqrt{A/\pi}$, donde $A$ es el área de la máscara en píxeles.
 - Diámetro normalizado: $d / \min(H, W)$. Es comparable entre fotos tomadas a la misma distancia.
 - Clase de tamaño: terciles del diámetro normalizado, calculados por tipo de fruta.
-- Diámetro en centímetros: $d_{cm} = d_{px} \cdot (D_{moneda,cm} / d_{moneda,px})$, usando la moneda de 500 pesos como referencia de escala.
+- Longitud en centímetros: $L_{cm} = k \cdot L_{px}$. El factor $k$ (cm/px) se estima con la mediana de $	ext{medida}_{cm} / L_{px}$ en las fotos propias, que se tomaron a distancia fija. $L$ es el diámetro equivalente en manzana y guayaba, y el lado mayor del rectángulo mínimo en el banano.
 
 ## 6. Tiempos de inferencia (CPU, 4 núcleos)
 

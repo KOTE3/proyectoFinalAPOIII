@@ -26,6 +26,8 @@ Resultado actual (test, 2 540 imágenes, clases buena/mala): XGBoost obtiene F1-
 
 ## 2. Reparto de tareas
 
+> **Traspaso.** Las tareas técnicas pendientes (clase `regular`, tamaño, evaluación en fotos propias y aplicación con cámara) se especifican en [`TRASPASO.md`](TRASPASO.md) y las continúan los integrantes 2 y 3.
+
 ### Tareas compartidas (los tres integrantes)
 
 | Tarea | Sebastián Mejía | Integrante 2 | Integrante 3 |
@@ -43,7 +45,7 @@ Resultado actual (test, 2 540 imágenes, clases buena/mala): XGBoost obtiene F1-
 - Toma de las 45 fotografías del conjunto principal (sección 4).
 - Integrar las fotos propias al flujo de datos y verificar su segmentación.
 - Pasar de 2 a 3 clases (umbrales calibrados sobre P(mala | x) con los recortes etiquetados como `regular`).
-- Calibrar el tamaño en centímetros con la moneda de referencia y validarlo contra las medidas con regla.
+- Calibrar el tamaño en centímetros con las medidas con regla.
 - Evaluar los modelos en las fotos propias (generalización a otra cámara).
 - Aplicación Streamlit: carga de imagen y captura con cámara, con calidad y tamaño como salida.
 - Mantener el repositorio, revisar y unir los aportes del grupo.
@@ -116,7 +118,7 @@ Se compran **5 frutas de cada tipo** y cada una se fotografía **tres veces**, a
 **Fotos de prueba de cámara (integrantes 2 y 3): 5–10 fotos cada uno.**
 - Con su propio celular y el mismo protocolo, mezclando las tres frutas y las tres calidades.
 - No se usan para entrenar ni para elegir modelos. Solo miden si el sistema generaliza a cámaras que nunca vio, una de las preguntas del análisis de resultados.
-- Se registran en el CSV con `conjunto = prueba_camara`.
+- Se nombran con el prefijo `prueba_`; el lector del CSV las marca como `conjunto = prueba_camara`.
 
 **Justificación de la elección.**
 - **Las tres frutas están en el dataset de Kaggle.** Las fotos propias miden si el modelo generaliza a otra cámara y a otras condiciones.
@@ -131,7 +133,6 @@ Se compran **5 frutas de cada tipo** y cada una se fotografía **tres veces**, a
 - Cartulina blanca mate, de tamaño pliego o medio pliego. Debe ocupar **todo** el encuadre.
 - Soporte para fijar la altura del celular: una caja o una pila de libros.
 - Regla o cinta métrica.
-- Una moneda de 500 pesos.
 
 ### 4.3 Montaje y toma
 
@@ -152,8 +153,8 @@ Se compran **5 frutas de cada tipo** y cada una se fotografía **tres veces**, a
    - **una sola fruta por foto.**
 6. **Enfoque.** Tocar la fruta en la pantalla antes de disparar y revisar que la foto no esté movida.
 7. **Segunda toma (opcional).** Si se toma otra foto de la misma fruta desde otro ángulo, ambas llevan el mismo `id_fruta`.
-8. **Moneda de referencia.** En **2 o 3 fotos por fruta** (6–9 en total) se pone la moneda de 500 pesos plana sobre la cartulina, a unos 3 cm de la fruta, sin tocarla y lejos del borde de la foto. Medir una vez el diámetro de la moneda con la regla y anotarlo en `notas`.
-9. **Medida con regla.** Después de cada foto, medir la fruta y anotar el valor en `medida_cm`. Esta medida es la referencia real para validar la estimación de tamaño.
+8. **Moneda de referencia (descartada).** Se había previsto incluir una moneda de 500 pesos como escala. Finalmente no se usó: la distancia de la cámara es fija y cada fruta se midió con regla, así que la escala píxel → cm se calibra con esas medidas (`docs/TRASPASO.md` §4.4).
+9. **Medida con regla.** Después de cada foto, medir la fruta y anotar el valor en la columna `tamaño`. Esta medida es la referencia real para validar la estimación de tamaño.
    - **Manzana y guayaba:** el diámetro mayor.
    - **Banano:** el largo en línea recta de punta a punta.
 10. **Privacidad.** No fotografiar personas, rostros ni datos de vendedores. En plazas o supermercados, pedir permiso antes de tomar fotos.
@@ -190,20 +191,21 @@ Una fila por foto:
 
 | Columna | Contenido | Ejemplo |
 |---|---|---|
-| `archivo` | Nombre del archivo | `manzana_regular_04.jpg` |
-| `id_fruta` | Identificador de la fruta física: 3 letras + número | `man_04` |
+| `archivo` | Nombre del archivo en `data/raw/propias/` | `manzana_regular_04.jpg` |
+| `id_fruta` | Identificador de la fruta física: 3 letras + número; igual en sus tres fotos | `man_04` |
 | `fruta` | manzana / banano / guayaba | `manzana` |
 | `calidad` | buena / regular / mala | `regular` |
-| `tamano` | Se deja vacío; se calcula por terciles de `medida_cm` dentro de cada fruta | |
-| `medida_cm` | Medida con regla (sección 4.3, paso 9) | `7.2` |
-| `defecto` | ninguno / mancha / golpe / podredumbre / moho / arrugas / otro | `golpe` |
-| `fuente` | casa / supermercado / plaza | `plaza` |
-| `celular` | Marca y modelo del celular | `Samsung A54` |
-| `moneda` | si / no | `no` |
-| `conjunto` | principal / prueba_camara | `principal` |
-| `autor` | Nombre de quien tomó la foto | `Sebastián Mejía` |
-| `fecha` | AAAA-MM-DD | `2026-11-14` |
-| `notas` | Observaciones; diámetro de la moneda si aparece | `golpe lateral` |
+| `tamaño` | Medida con regla, con unidad: diámetro mayor (manzana, guayaba) o largo de punta a punta (banano) | `7.5 cm` |
+
+- `fruitq.data.read_annotations` convierte `tamaño` en la columna numérica `medida_cm`.
+- La clase pequeño/mediano/grande se calcula por terciles de `medida_cm` dentro de cada fruta.
+- Las fotos tomadas con otro celular se nombran con el prefijo `prueba_`. El lector las marca como `conjunto = prueba_camara`, y al resto como `principal`.
+
+**Edición en Excel.**
+- El archivo usa `;` como separador y codificación UTF-8 con BOM. Así Excel, con configuración regional en español, lo abre directamente en columnas y muestra bien las tildes.
+- Al guardar, elegir **"CSV UTF-8 (delimitado por comas)"**.
+- La medida puede escribirse con coma o punto decimal (`7,5 cm` o `7.5 cm`).
+- El código lo lee con `fruitq.data.read_annotations`, que acepta separador `;` o `,`, codificación UTF-8 o Windows-1252, y coma o punto decimal.
 
 ### 4.8 Entrega de las fotos
 
@@ -220,8 +222,7 @@ Una fila por foto:
 - [ ] Ninguna foto está movida, tiene flash o reflejos fuertes.
 - [ ] Todas se tomaron desde 30 cm; el conjunto principal, con un solo celular.
 - [ ] Están en formato JPG y los nombres siguen el formato de la sección 4.5.
-- [ ] Hay de 2 a 3 fotos con la moneda por fruta.
-- [ ] Hay una fila completa en el CSV por cada foto, con `medida_cm`.
+- [ ] Hay una fila completa en el CSV por cada foto, con su `tamaño` medido con regla.
 
 ## 5. Flujo de trabajo con Git
 

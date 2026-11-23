@@ -40,3 +40,20 @@ def test_group_split_has_no_leakage():
     check_no_leakage(df)
     frac = df.split.value_counts(normalize=True)
     assert 0.6 < frac["train"] < 0.8
+
+
+def test_read_annotations_excel_variants(tmp_path):
+    """El lector acepta el CSV original y el que guarda Excel en español."""
+    from fruitq.data import read_annotations
+
+    original = "archivo,autor,medida_cm\nbanano_buena_01.jpg,Sebastián Mejía,17.5\n"
+    excel_utf8 = "\ufeffarchivo;autor;medida_cm\r\nbanano_buena_01.jpg;Sebastián Mejía;17,5\r\n"
+    excel_ansi = "archivo;autor;medida_cm\r\nbanano_buena_01.jpg;Sebastián Mejía;17,5\r\n"
+    for i, (text, enc) in enumerate([(original, "utf-8"), (excel_utf8, "utf-8"), (excel_ansi, "cp1252")]):
+        p = tmp_path / f"a{i}.csv"
+        p.write_bytes(text.encode(enc))
+        df = read_annotations(p)
+        assert list(df.columns) == ["archivo", "autor", "medida_cm", "conjunto"]
+        assert df.loc[0, "conjunto"] == "principal"
+        assert df.loc[0, "autor"] == "Sebastián Mejía"
+        assert df.loc[0, "medida_cm"] == 17.5

@@ -26,8 +26,8 @@ Para compartir las fotos con la clase usar la carpeta común acordada (Drive / r
 
 - Las 5 frutas de cada tipo se eligen de tamaños distintos (pequeñas, medianas y grandes).
 - Las tres fotos de una misma fruta llevan el **mismo `id_fruta`**, para que nunca queden repartidas entre train y test.
-- En 2–3 fotos por fruta se pone una **moneda de 500** junto a la fruta. Su diámetro se mide con regla y se anota, para convertir píxeles a centímetros.
-- Además, los integrantes 2 y 3 toman 5–10 fotos cada uno con su propio celular (`conjunto = prueba_camara`). Esas fotos solo se usan para evaluar la generalización a otras cámaras.
+- Cada fruta se mide con regla en cada foto. Como la cámara está siempre a la misma distancia, esas medidas sirven para convertir píxeles a centímetros; no se usó moneda de referencia.
+- Además, los integrantes 2 y 3 toman 5–10 fotos cada uno con su propio celular (prefijo `prueba_` en el nombre). Esas fotos solo se usan para evaluar la generalización a otras cámaras.
 
 ## Protocolo de recolección
 
@@ -55,19 +55,20 @@ Resumen; el protocolo completo (montaje, configuración de la cámara, obtenció
 
 ## Formato de `labels/anotaciones_propias.csv`
 
+**Edición en Excel.**
+- El archivo usa `;` como separador y codificación UTF-8 con BOM. Así Excel, con configuración regional en español, lo abre directamente en columnas y muestra bien las tildes.
+- Al guardar, elegir **"CSV UTF-8 (delimitado por comas)"**.
+- La medida puede escribirse con coma o punto decimal (`7,5 cm` o `7.5 cm`).
+- El código lo lee con `fruitq.data.read_annotations`, que acepta separador `;` o `,`, codificación UTF-8 o Windows-1252, y coma o punto decimal.
+
 | Columna | Descripción |
 |---|---|
-| `archivo` | Ruta relativa a `data/raw/propias/` |
-| `id_fruta` | Identificador de la fruta física (p. ej. `ban_03`); igual en varias fotos de la misma fruta |
+| `archivo` | Nombre del archivo en `data/raw/propias/` |
+| `id_fruta` | Identificador de la fruta física (p. ej. `ban_03`); igual en sus tres fotos |
 | `fruta` | manzana / banano / guayaba |
 | `calidad` | buena / regular / mala |
-| `tamano` | pequeno / mediano / grande; se calcula por terciles de `medida_cm` dentro de cada fruta |
-| `medida_cm` | Medida con regla: diámetro mayor (manzana, guayaba) o largo de punta a punta (banano) |
-| `defecto` | ninguno / mancha / golpe / podredumbre / moho / arrugas / otro |
-| `fuente` | casa / supermercado / plaza |
-| `celular` | Marca y modelo del celular usado |
-| `moneda` | si / no: la foto incluye la moneda de 500 pesos de referencia |
-| `conjunto` | principal (entrenamiento y evaluación) / prueba_camara (solo prueba de generalización a otro celular) |
-| `autor` | Integrante que tomó la foto |
-| `fecha` | AAAA-MM-DD |
-| `notas` | Observaciones libres; diámetro medido de la moneda cuando aparece |
+| `tamaño` | Medida con regla, con unidad (p. ej. `7.5 cm`): diámetro mayor (manzana, guayaba) o largo de punta a punta (banano) |
+
+- `fruitq.data.read_annotations` convierte `tamaño` en la columna numérica `medida_cm`.
+- La clase pequeño/mediano/grande se obtiene por terciles de `medida_cm` dentro de cada fruta.
+- Las fotos con el prefijo `prueba_` (tomadas con otro celular) quedan marcadas como `conjunto = prueba_camara`.

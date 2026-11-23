@@ -246,7 +246,8 @@ def fruit_on_uniform_background(
     img_bgr: np.ndarray,
     border: float = 0.05,
     min_chroma: float = 8.0,
-    dark_ratio: float = 0.3,
+    chroma_margin: float = 3.0,
+    dark_ratio: float = 0.35,
     pad: int = 6,
     min_area_frac: float = 0.002,
     max_border_frac: float = 0.25,
@@ -277,7 +278,8 @@ def fruit_on_uniform_background(
     ring[:k], ring[-k:], ring[:, :k], ring[:, -k:] = True, True, True, True
     a0, b0, L0 = np.median(a[ring]), np.median(b[ring]), np.median(L[ring])
     chroma = np.hypot(a - a0, b - b0)
-    t = max(min_chroma, 3.0 * float(np.percentile(chroma[ring], 99)))
+    # umbral: croma máxima del fondo (percentil 99 del borde) más un margen
+    t = max(min_chroma, float(np.percentile(chroma[ring], 99)) + chroma_margin)
     mask = (((chroma > t) | (L < dark_ratio * L0)) * 255).astype(np.uint8)
 
     ks = max(3, int(0.01 * min(h, w)) | 1)

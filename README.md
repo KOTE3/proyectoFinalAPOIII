@@ -107,6 +107,7 @@ pytest
 - Organización de los datos: [`data/README.md`](data/README.md).
 - Etiquetado de recortes: [`docs/ETIQUETADO.md`](docs/ETIQUETADO.md).
 - Reparto de tareas y protocolo de fotografías: [`docs/PLAN_DE_TRABAJO.md`](docs/PLAN_DE_TRABAJO.md).
+- Traspaso del trabajo técnico, datos compartidos y tareas pendientes: [`docs/TRASPASO.md`](docs/TRASPASO.md).
 
 ## Estructura del repositorio
 
@@ -118,7 +119,8 @@ pytest
 │   ├── arquitectura.md       # Diseño del sistema y de los modelos
 │   ├── instalacion.md        # Instalación y reproducción
 │   ├── ETIQUETADO.md         # Guía de etiquetado de recortes
-│   └── PLAN_DE_TRABAJO.md    # Reparto de tareas y protocolo de fotografías
+│   ├── PLAN_DE_TRABAJO.md    # Reparto de tareas y protocolo de fotografías
+│   └── TRASPASO.md           # Estado entregado y especificación de lo pendiente
 ├── data/                     # (no versionado, salvo etiquetas) ver data/README.md
 │   ├── raw/kaggle/           # Dataset Fruit Quality Classification (Kaggle)
 │   ├── raw/propias/          # Fotos recolectadas por el grupo
