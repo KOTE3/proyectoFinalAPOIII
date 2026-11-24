@@ -13,8 +13,8 @@ flowchart LR
     F --> H["P(mala | x)"]
     G --> H
     H --> I[Umbrales t₁, t₂<br/>buena / regular / mala]
-    C --> J[Diámetro equivalente<br/>fruitq.size]
-    J --> K[pequeño / mediano / grande<br/>y diámetro en cm]
+    C --> J[Lado mayor del<br/>rectángulo mínimo<br/>fruitq.size]
+    J --> K[cm = k · L<br/>pequeño / mediano / grande]
     I --> L[Interfaz Streamlit]
     K --> L
 ```
@@ -22,8 +22,8 @@ flowchart LR
 La rama de XGBoost es el modelo principal: tiene el mejor F1-macro en test (0.964). La CNN se conserva como modelo de deep learning comparado y como fuente de probabilidades menos extremas para la clase `regular`.
 
 Estado de los bloques:
-- **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala.
-- **Pendientes:** los umbrales de 3 clases (dependen de las etiquetas `regular`), la conversión a centímetros (se calibra con las medidas con regla de las fotos propias) y la interfaz.
+- **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala, y la estimación de tamaño en centímetros (sección 5).
+- **Pendientes:** los umbrales de 3 clases (dependen de las etiquetas `regular`) y la interfaz.
 
 ## 2. Segmentación (`src/fruitq/segmentation.py`)
 
@@ -76,10 +76,11 @@ Entrenamiento:
 
 ## 5. Tamaño (`src/fruitq/size.py`)
 
-- Diámetro equivalente: $d = 2\sqrt{A/\pi}$, donde $A$ es el área de la máscara en píxeles.
-- Diámetro normalizado: $d / \min(H, W)$. Es comparable entre fotos tomadas a la misma distancia.
-- Clase de tamaño: terciles del diámetro normalizado, calculados por tipo de fruta.
-- Longitud en centímetros: $L_{cm} = k \cdot L_{px}$. El factor $k$ (cm/px) se estima con la mediana de $	ext{medida}_{cm} / L_{px}$ en las fotos propias, que se tomaron a distancia fija. $L$ es el diámetro equivalente en manzana y guayaba, y el lado mayor del rectángulo mínimo en el banano.
+- **Kaggle** (distancia de cámara no controlada): diámetro equivalente $d = 2\sqrt{A/\pi}$, normalizado por el lado menor de la imagen, $d / \min(H, W)$. Solo es comparable entre fotos tomadas a la misma distancia.
+- **Fotos propias** (cámara a 30 cm): $L_{px}$ es el lado mayor del rectángulo de área mínima que contiene la máscara (`cv2.minAreaRect`), con la imagen reducida a 1024 px por el lado mayor. Corresponde a la medida con regla: diámetro mayor en manzana y guayaba, largo de punta a punta en banano.
+- **Longitud en centímetros:** $L_{cm} = k \cdot L_{px}$, con $k = \operatorname{mediana}(\text{medida}_{cm} / L_{px}) = 0.0404$ cm/px, validado dejando una fruta fuera. Error absoluto medio: 0.98 cm.
+- **Clase de tamaño:** terciles de la medida en cm, calculados por tipo de fruta.
+- **Parámetros:** `models/umbrales.json`, sección `tamano`. Resultados en `docs/fases/05_evaluacion.md`.
 
 ## 6. Tiempos de inferencia (CPU, 4 núcleos)
 

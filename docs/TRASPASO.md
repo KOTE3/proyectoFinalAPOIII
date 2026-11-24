@@ -103,25 +103,19 @@ $$\hat y = \begin{cases} \text{buena} & p < t_1 \\ \text{regular} & t_1 \le p < 
 6. Leer el CSV siempre con `fruitq.data.read_annotations`.
 7. Documentar los resultados en `docs/fases/04_modelado.md` y `docs/fases/05_evaluacion.md`.
 
-### 4.4 Tamaño
+### 4.4 Tamaño (terminado)
 
-1. Para cada foto propia, calcular la longitud característica a partir de la máscara (`src/fruitq/size.py`):
-   - manzana y guayaba: diámetro equivalente $d = 2\sqrt{A/\pi}$;
-   - banano: largo, como el lado mayor de `cv2.minAreaRect`.
-2. Conversión a centímetros. No se tomaron fotos con moneda: la cámara estuvo a distancia fija y cada fruta se midió con regla. Por eso el factor de escala se estima directamente:
+- **Código:** `src/fruitq/size.py`; pruebas en `tests/test_size.py`; análisis en `notebooks/06_tamano.ipynb` (`python scripts/build_notebooks.py tamano --run`). Detalle en `docs/fases/04_modelado.md` y `docs/fases/05_evaluacion.md`.
+- **Longitud en píxeles:** lado mayor de `cv2.minAreaRect` sobre la máscara de `fruit_on_uniform_background`, en las tres frutas, con la imagen reducida a 1024 px por el lado mayor. Es la magnitud que se midió con regla: diámetro mayor en manzana y guayaba, largo de punta a punta en banano. La propuesta inicial (diámetro equivalente $d = 2\sqrt{A/\pi}$ en manzana y guayaba) se conserva como comparación.
+- **Escala:**
 
-   $$k = \operatorname{mediana}\left(rac{	ext{medida}_{cm}}{L_{px}}
-ight).$$
+  $$k = \operatorname{mediana}\left(\frac{\text{medida}_{cm}}{L_{px}}\right) = 0.0404 \ \text{cm/px},$$
 
-   Para no evaluar con los mismos datos con los que se ajusta, $k$ se calcula con validación cruzada agrupada por `id_fruta`.
-
-   Resultado preliminar, con las imágenes reducidas a 1024 px por el lado mayor:
-   - $k pprox 0.042$ cm/px, con un coeficiente de variación de 15 %;
-   - error absoluto medio: 0.8 cm en manzana, 1.1 cm en guayaba y 1.6 cm en banano.
-
-   Parte de la variación viene de pequeños cambios de altura de la cámara entre sesiones. Se puede reducir estimando un $k$ por día de captura.
-3. Validar contra `medida_cm` con el error absoluto medio en cm, por fruta.
-4. Asignar pequeño, mediano o grande por terciles de `medida_cm` dentro de cada fruta, y medir la exactitud de la clase de tamaño estimada.
+  validada dejando una fruta fuera (`id_fruta`).
+- **Error absoluto medio validado:** 1.49 cm en banano, 0.62 cm en guayaba y 0.82 cm en manzana; 0.98 cm (9.9 %) en total. Con el diámetro equivalente era 1.19 cm.
+- **Fuente principal del error:** las sesiones `banano buena` (+3.4 cm de sesgo medio) y `manzana mala` (+1.5 cm) se tomaron con la cámara más cerca de la fruta. Un $k$ por día no lo corrige, porque `banano buena` y `banano mala` se tomaron el mismo día con escalas distintas.
+- **Clases de tamaño:** terciles de `medida_cm` por fruta; exactitud de 55.6 % frente a 40 % de asignar siempre la clase más frecuente. Los terciles quedan separados por menos que el error de la estimación (en guayaba, 6.97 y 7.10 cm), porque las cinco frutas de cada tipo tienen tamaños parecidos.
+- **Para la aplicación (§4.5):** `models/umbrales.json`, sección `tamano` (`k_cm_por_px`, `max_side_px`, `terciles_cm` por fruta). La aplicación debe reducir la imagen a 1024 px antes de medir y conocer el tipo de fruta para asignar la clase. La sección `calidad` (§4.3) se agrega al mismo archivo sin borrar la de tamaño.
 
 ### 4.5 Aplicación con cámara (`app/app.py`)
 

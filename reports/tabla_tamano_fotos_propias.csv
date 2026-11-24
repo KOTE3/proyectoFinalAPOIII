@@ -1,0 +1,46 @@
+archivo,id_fruta,fruta,calidad,celular,fecha,medida_cm,L_px,d_eq_px,feret_px,cm_estimado,error_cm,clase_real,clase_estimada
+banano_buena_01.jpg,ban_01,banano,buena,moto g(9) play,2026-11-18,14.5,419.367,235.576,419.577,16.945,2.445,grande,grande
+banano_regular_01.jpg,ban_01,banano,regular,iPhone 13,2026-11-16,14.0,332.703,185.806,333.594,13.443,-0.557,mediano,pequeno
+banano_mala_01.jpg,ban_01,banano,mala,moto g(9) play,2026-11-18,13.5,332.543,181.15,333.074,13.436,-0.064,pequeno,pequeno
+banano_buena_02.jpg,ban_02,banano,buena,moto g(9) play,2026-11-18,15.0,388.898,217.542,389.032,15.714,0.714,grande,grande
+banano_regular_02.jpg,ban_02,banano,regular,iPhone 13,2026-11-16,15.0,338.107,176.356,339.329,13.661,-1.339,grande,pequeno
+banano_mala_02.jpg,ban_02,banano,mala,moto g(9) play,2026-11-18,14.5,319.776,165.728,320.506,12.921,-1.579,grande,pequeno
+banano_buena_03.jpg,ban_03,banano,buena,moto g(9) play,2026-11-18,14.0,388.898,217.542,389.032,15.714,1.714,mediano,grande
+banano_regular_03.jpg,ban_03,banano,regular,iPhone 13,2026-11-16,13.5,322.425,178.239,322.621,13.028,-0.472,pequeno,pequeno
+banano_mala_03.jpg,ban_03,banano,mala,moto g(9) play,2026-11-18,13.5,314.614,170.893,315.417,12.712,-0.788,pequeno,pequeno
+banano_buena_04.jpg,ban_04,banano,buena,moto g(9) play,2026-11-18,14.5,490.814,251.418,491.452,19.831,5.331,grande,grande
+banano_regular_04.jpg,ban_04,banano,regular,iPhone 13,2026-11-16,14.5,347.077,184.879,348.518,14.024,-0.476,grande,mediano
+banano_mala_04.jpg,ban_04,banano,mala,moto g(9) play,2026-11-18,13.5,331.999,174.902,334.045,13.415,-0.085,pequeno,pequeno
+banano_buena_05.jpg,ban_05,banano,buena,moto g(9) play,2026-11-18,14.0,509.762,262.72,509.989,20.648,6.648,mediano,grande
+banano_regular_05.jpg,ban_05,banano,regular,iPhone 13,2026-11-16,14.0,343.396,186.423,345.429,13.909,-0.091,mediano,mediano
+banano_mala_05.jpg,ban_05,banano,mala,moto g(9) play,2026-11-18,13.5,334.181,178.828,334.934,13.536,0.036,pequeno,pequeno
+manzana_buena_01.jpg,man_01,manzana,buena,iPhone 13,2026-11-16,8.0,190.356,189.544,228.876,7.691,-0.309,grande,mediano
+manzana_regular_01.jpg,man_01,manzana,regular,sin metadatos,,8.0,188.442,167.385,199.822,7.614,-0.386,grande,mediano
+manzana_mala_01.jpg,man_01,manzana,mala,moto g(9) play,2026-11-23,7.8,206.449,200.331,220.737,8.342,0.542,mediano,grande
+manzana_buena_02.jpg,man_02,manzana,buena,iPhone 13,2026-11-16,8.0,211.745,204.196,250.966,8.603,0.603,grande,grande
+manzana_regular_02.jpg,man_02,manzana,regular,sin metadatos,,8.0,208.496,204.282,219.784,8.471,0.471,grande,grande
+manzana_mala_02.jpg,man_02,manzana,mala,moto g(9) play,2026-11-23,7.9,263.325,242.039,288.42,10.699,2.799,mediano,grande
+manzana_buena_03.jpg,man_03,manzana,buena,iPhone 13,2026-11-16,8.5,213.948,208.724,230.868,8.693,0.193,grande,grande
+manzana_regular_03.jpg,man_03,manzana,regular,sin metadatos,,8.4,212.581,204.711,225.535,8.637,0.237,grande,grande
+manzana_mala_03.jpg,man_03,manzana,mala,moto g(9) play,2026-11-23,8.2,215.832,202.011,228.845,8.769,0.569,grande,grande
+manzana_buena_04.jpg,man_04,manzana,buena,iPhone 13,2026-11-16,7.5,208.858,207.069,232.691,8.486,0.986,mediano,grande
+manzana_regular_04.jpg,man_04,manzana,regular,sin metadatos,,7.5,194.184,190.451,203.666,7.89,0.39,mediano,mediano
+manzana_mala_04.jpg,man_04,manzana,mala,moto g(9) play,2026-11-23,7.3,226.18,218.498,247.396,9.19,1.89,pequeno,grande
+manzana_buena_05.jpg,man_05,manzana,buena,iPhone 13,2026-11-16,7.5,192.299,193.523,209.122,7.813,0.313,mediano,mediano
+manzana_regular_05.jpg,man_05,manzana,regular,sin metadatos,,7.3,208.629,195.947,223.6,8.476,1.176,pequeno,grande
+manzana_mala_05.jpg,man_05,manzana,mala,moto g(9) play,2026-11-23,7.0,208.698,202.71,225.175,8.479,1.479,pequeno,grande
+guayaba_buena_01.jpg,gua_01,guayaba,buena,iPhone 13,2026-11-16,9.0,226.73,170.359,239.253,9.161,0.161,grande,grande
+guayaba_regular_01.jpg,gua_01,guayaba,regular,iPhone 13,2026-11-16,9.0,192.353,150.449,194.064,7.772,-1.228,grande,grande
+guayaba_mala_01.jpg,gua_01,guayaba,mala,moto g(9) play,2026-11-18,8.7,207.0,153.46,208.062,8.364,-0.336,grande,grande
+guayaba_buena_02.jpg,gua_02,guayaba,buena,iPhone 13,2026-11-16,7.5,166.102,146.526,189.264,6.655,-0.845,grande,pequeno
+guayaba_regular_02.jpg,gua_02,guayaba,regular,iPhone 13,2026-11-16,7.3,151.321,149.345,172.105,6.062,-1.238,grande,pequeno
+guayaba_mala_02.jpg,gua_02,guayaba,mala,moto g(9) play,2026-11-18,6.9,135.433,130.887,154.548,5.426,-1.474,pequeno,pequeno
+guayaba_buena_03.jpg,gua_03,guayaba,buena,iPhone 13,2026-11-16,7.0,173.21,159.041,201.636,7.014,0.014,mediano,mediano
+guayaba_regular_03.jpg,gua_03,guayaba,regular,iPhone 13,2026-11-16,7.0,193.196,168.458,210.155,7.824,0.824,mediano,grande
+guayaba_mala_03.jpg,gua_03,guayaba,mala,moto g(9) play,2026-11-18,6.8,161.591,144.192,180.544,6.544,-0.256,pequeno,pequeno
+guayaba_buena_04.jpg,gua_04,guayaba,buena,iPhone 13,2026-11-16,7.0,158.597,152.717,193.373,6.408,-0.592,mediano,pequeno
+guayaba_regular_04.jpg,gua_04,guayaba,regular,iPhone 13,2026-11-16,7.0,179.78,161.551,187.216,7.264,0.264,mediano,grande
+guayaba_mala_04.jpg,gua_04,guayaba,mala,moto g(9) play,2026-11-18,6.8,155.871,144.754,181.339,6.298,-0.502,pequeno,pequeno
+guayaba_buena_05.jpg,gua_05,guayaba,buena,iPhone 13,2026-11-16,7.0,168.495,147.22,195.126,6.75,-0.25,mediano,pequeno
+guayaba_regular_05.jpg,gua_05,guayaba,regular,iPhone 13,2026-11-16,6.9,153.656,153.0,181.397,6.156,-0.744,pequeno,pequeno
+guayaba_mala_05.jpg,gua_05,guayaba,mala,moto g(9) play,2026-11-18,6.7,153.519,149.364,175.183,6.15,-0.55,pequeno,pequeno

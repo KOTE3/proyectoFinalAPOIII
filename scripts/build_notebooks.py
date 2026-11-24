@@ -633,10 +633,217 @@ h.remove()
     return nb
 
 
+def tamano_notebook() -> nbf.NotebookNode:
+    cells = [
+        md(r"""
+# Fases 4 y 5 — Tamaño en centímetros con las fotos propias
+
+Estimación del tamaño físico de la fruta a partir de una sola foto, con las 45 fotos del conjunto principal (`data/labels/anotaciones_propias.csv`). Especificación: `docs/TRASPASO.md` §4.4.
+
+**Formulación.** La cámara estuvo a distancia fija (30 cm), así que la longitud real es proporcional a la longitud en píxeles:
+
+$$\text{medida}_{cm} \approx k \cdot L_{px}, \qquad \hat k = \operatorname{mediana}_i\left(\frac{\text{medida}_{cm,i}}{L_{px,i}}\right).$$
+
+- $L_{px}$ es el lado mayor del rectángulo de área mínima que contiene la máscara (`cv2.minAreaRect`), la misma magnitud que se midió con regla: diámetro mayor en manzana y guayaba, largo de punta a punta en banano.
+- La mediana, a diferencia de la media o de los mínimos cuadrados, es robusta a fotos tomadas a una altura algo distinta.
+- $\hat k$ se valida **dejando una fruta fuera** (`id_fruta`): las tres fotos de una fruta nunca se evalúan con un $\hat k$ ajustado con ellas.
+- Las clases pequeño / mediano / grande se definen con los terciles de `medida_cm` dentro de cada fruta.
+
+Todas las imágenes se reducen a 1024 px por el lado mayor (`read_image_max`), por lo que $\hat k$ solo es válido a esa escala.
+"""),
+        code("""
+import sys, json, math
+from pathlib import Path
+ROOT = Path.cwd().parent if Path.cwd().name == "notebooks" else Path.cwd()
+sys.path.insert(0, str(ROOT / "src"))
+
+import numpy as np, pandas as pd, matplotlib.pyplot as plt, seaborn as sns, cv2
+from PIL import Image, ExifTags
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+from fruitq.config import FIGURES, MODELS, RAW_PROPIAS, LABELS, SIZE_CLASSES
+from fruitq.io import project_path, read_image_max
+from fruitq.data import read_annotations
+from fruitq.segmentation import fruit_on_uniform_background, largest_fruit
+from fruitq.size import (characteristic_length, cross_validated_cm, equivalent_diameter,
+                         fit_scale, fit_thresholds, size_class)
+
+MAX_SIDE = 1024
+FRUTAS = ["banano", "guayaba", "manzana"]
+COLOR = {"banano": "#2a78d6", "guayaba": "#eb6834", "manzana": "#1baf7a"}
+MARCA = {"banano": "o", "guayaba": "s", "manzana": "^"}
+
+sns.set_theme(style="whitegrid"); plt.rcParams["figure.dpi"] = 110
+def savefig(name):
+    plt.savefig(FIGURES / f"{name}.pdf", bbox_inches="tight"); plt.savefig(FIGURES / f"{name}.png", bbox_inches="tight", dpi=150)
+"""),
+        md("## 1. Medición en píxeles"),
+        md(r"""
+Cada foto se segmenta con `fruit_on_uniform_background`, que excluye la sombra; si no detecta fruta se usa `largest_fruit`. Además de $L_{px}$ se calculan, para comparar, el diámetro equivalente $d = 2\sqrt{A/\pi}$ (definición inicial de la especificación para manzana y guayaba) y el diámetro de Feret máximo (mayor distancia entre dos puntos del contorno). El celular y la fecha se leen de los metadatos EXIF.
+"""),
+        code("""
+anot = read_annotations(LABELS / "anotaciones_propias.csv")
+anot = anot[anot.conjunto == "principal"].reset_index(drop=True)
+TAG = {v: k for k, v in ExifTags.TAGS.items()}
+
+def exif(path):
+    ex = Image.open(path).getexif()
+    sub = ex.get_ifd(0x8769) if ex else {}
+    fecha = sub.get(TAG["DateTimeOriginal"]) or ex.get(TAG["DateTime"]) or ""
+    return (ex.get(TAG["Model"]) or "sin metadatos"), fecha[:10].replace(":", "-")
+
+filas, sin_fondo_uniforme = [], []
+for r in anot.itertuples():
+    ruta = RAW_PROPIAS / r.archivo
+    img = read_image_max(ruta, MAX_SIDE)
+    reg = fruit_on_uniform_background(img)
+    if reg is None:
+        sin_fondo_uniforme.append(r.archivo); reg = largest_fruit(img)
+    hull = cv2.convexHull(reg.contour).reshape(-1, 2).astype(float)
+    feret = np.sqrt(((hull[:, None] - hull[None]) ** 2).sum(-1)).max()
+    celular, fecha = exif(ruta)
+    filas.append(dict(archivo=r.archivo, id_fruta=r.id_fruta, fruta=r.fruta, calidad=r.calidad, medida_cm=r.medida_cm,
+                      celular=celular, fecha=fecha, L_px=characteristic_length(reg.contour),
+                      d_eq_px=equivalent_diameter(reg.area), feret_px=feret))
+tam = pd.DataFrame(filas)
+print(f"{len(tam)} fotos medidas; segmentadas con largest_fruit: {sin_fondo_uniforme or 'ninguna'}")
+tam.groupby("fruta")[["medida_cm", "L_px", "d_eq_px", "feret_px"]].agg(["min", "median", "max"]).round(1)
+"""),
+        md("## 2. Factor de escala y validación cruzada agrupada"),
+        code("""
+variantes = {
+    "Lado mayor del rectángulo mínimo (elegida)": tam.L_px,
+    "Diámetro equivalente; banano: lado mayor": np.where(tam.fruta == "banano", tam.L_px, tam.d_eq_px),
+    "Feret máximo": tam.feret_px,
+}
+filas = []
+for nombre, L in variantes.items():
+    pred = cross_validated_cm(tam.medida_cm, L, tam.id_fruta)
+    err = np.abs(pred - tam.medida_cm)
+    ratio = tam.medida_cm / L
+    fila = {"medida en píxeles": nombre, "k (todas las fotos)": fit_scale(tam.medida_cm, L),
+            "CV de medida/L (%)": 100 * ratio.std() / ratio.mean(), "EAM global (cm)": err.mean()}
+    fila.update({f"EAM {f} (cm)": err[tam.fruta == f].mean() for f in FRUTAS})
+    fila["error relativo medio (%)"] = 100 * (err / tam.medida_cm).mean()
+    filas.append(fila)
+comparacion = pd.DataFrame(filas).set_index("medida en píxeles")
+comparacion.round(4)
+"""),
+        md(r"""
+La variante elegida se fija por la **definición de la medida con regla** (diámetro mayor y largo de punta a punta), no por su error; las otras dos se muestran como comparación. EAM = error absoluto medio de la estimación validada (cada fruta estimada con un $\hat k$ que no la incluye).
+"""),
+        code("""
+K = fit_scale(tam.medida_cm, tam.L_px)                       # k final, con las 45 fotos, para la aplicación
+tam["cm_estimado"] = cross_validated_cm(tam.medida_cm, tam.L_px, tam.id_fruta)
+tam["error_cm"] = tam.cm_estimado - tam.medida_cm             # > 0: sobreestima
+print(f"k = {K:.5f} cm/px a {MAX_SIDE} px por el lado mayor")
+resumen = tam.groupby("fruta").apply(lambda g: pd.Series({
+    "fotos": len(g), "EAM (cm)": g.error_cm.abs().mean(), "sesgo medio (cm)": g.error_cm.mean(),
+    "error máximo (cm)": g.error_cm.abs().max(), "error relativo medio (%)": 100 * (g.error_cm.abs() / g.medida_cm).mean()}),
+    include_groups=False)
+resumen.loc["todas"] = [len(tam), tam.error_cm.abs().mean(), tam.error_cm.mean(), tam.error_cm.abs().max(),
+                        100 * (tam.error_cm.abs() / tam.medida_cm).mean()]
+resumen.round(3)
+"""),
+        code("""
+fig, ax = plt.subplots(figsize=(5.6, 4.2))
+for f in FRUTAS:
+    s = tam[tam.fruta == f]
+    ax.scatter(s.L_px, s.medida_cm, s=42, marker=MARCA[f], color=COLOR[f], edgecolor="white", linewidth=0.8, label=f, zorder=3)
+x = np.linspace(0, tam.L_px.max() * 1.05, 50)
+ax.plot(x, K * x, color="#555555", lw=1.5, ls="--", label=f"medida = {K:.4f} · L", zorder=2)
+ax.set_xlim(0, None); ax.set_ylim(0, None)
+ax.set_xlabel(f"L (px, imagen a {MAX_SIDE} px)"); ax.set_ylabel("medida con regla (cm)")
+ax.set_title("Escala píxel → centímetro (45 fotos propias)")
+ax.legend(frameon=False)
+plt.tight_layout(); savefig("tamano_escala"); plt.show()
+"""),
+        code("""
+fig, axes = plt.subplots(1, 3, figsize=(12, 3.8))
+for ax, f in zip(axes, FRUTAS):
+    s = tam[tam.fruta == f]
+    lo, hi = min(s.medida_cm.min(), s.cm_estimado.min()) - 0.5, max(s.medida_cm.max(), s.cm_estimado.max()) + 0.5
+    ax.fill_between([lo, hi], [lo - 1, hi - 1], [lo + 1, hi + 1], color="#e8e8e8", zorder=1, label="±1 cm")
+    ax.plot([lo, hi], [lo, hi], color="#555555", lw=1.2, zorder=2, label="estimado = real")
+    ax.scatter(s.medida_cm, s.cm_estimado, s=42, marker=MARCA[f], color=COLOR[f], edgecolor="white", linewidth=0.8, zorder=3)
+    ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_aspect("equal")
+    ax.set_title(f"{f} · EAM = {s.error_cm.abs().mean():.2f} cm"); ax.set_xlabel("medida con regla (cm)")
+axes[0].set_ylabel("estimado, validación cruzada (cm)")
+handles, labels = axes[0].get_legend_handles_labels()
+fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 0))
+plt.tight_layout(rect=(0, 0.07, 1, 1)); savefig("tamano_estimado_vs_real"); plt.show()
+"""),
+        md("### Fuentes del error: sesión de captura y celular"),
+        md(r"""
+Cada combinación fruta × calidad se fotografió en una sesión distinta. Un sesgo medio grande y del mismo signo en toda una sesión indica que la cámara no quedó exactamente a 30 cm: si quedó más cerca, la fruta ocupa más píxeles y su tamaño se **sobreestima**. Celular y sesión están confundidos (ver `docs/TRASPASO.md` §4.1), así que esta tabla describe el error, pero no separa sus causas.
+"""),
+        code("""
+sesion = tam.groupby(["fruta", "calidad", "celular", "fecha"]).agg(
+    fotos=("archivo", "size"), L_px_mediana=("L_px", "median"), medida_cm_media=("medida_cm", "mean"),
+    sesgo_cm=("error_cm", "mean"), EAM_cm=("error_cm", lambda e: e.abs().mean())).round(3)
+sesion
+"""),
+        md("## 3. Clases de tamaño por terciles"),
+        md(r"""
+Para cada fruta, los terciles $t_1, t_2$ de `medida_cm` definen la clase real (pequeño si $x < t_1$, mediano si $t_1 \le x < t_2$, grande si $x \ge t_2$). La clase estimada aplica los mismos umbrales a la estimación validada en cm. La exactitud se compara con la de asignar siempre la clase más frecuente.
+"""),
+        code("""
+terciles = {f: fit_thresholds(tam.loc[tam.fruta == f, "medida_cm"]) for f in FRUTAS}
+tam["clase_real"] = [size_class(v, terciles[f]) for v, f in zip(tam.medida_cm, tam.fruta)]
+tam["clase_estimada"] = [size_class(v, terciles[f]) for v, f in zip(tam.cm_estimado, tam.fruta)]
+orden = {c: i for i, c in enumerate(SIZE_CLASSES)}
+tam["salto"] = (tam.clase_estimada.map(orden) - tam.clase_real.map(orden)).abs()
+
+clases = tam.groupby("fruta").apply(lambda g: pd.Series({
+    "t1 (cm)": terciles[g.name][0], "t2 (cm)": terciles[g.name][1], "rango medido (cm)": g.medida_cm.max() - g.medida_cm.min(),
+    "exactitud": (g.clase_real == g.clase_estimada).mean(), "error de dos clases": (g.salto == 2).mean(),
+    "clase más frecuente": g.clase_real.value_counts(normalize=True).iloc[0]}), include_groups=False)
+clases.loc["todas"] = [np.nan, np.nan, np.nan, (tam.clase_real == tam.clase_estimada).mean(), (tam.salto == 2).mean(),
+                       np.nan]
+clases.round(3)
+"""),
+        code("""
+fig, ax = plt.subplots(figsize=(4.2, 3.6))
+ConfusionMatrixDisplay(confusion_matrix(tam.clase_real, tam.clase_estimada, labels=SIZE_CLASSES),
+                       display_labels=["pequeño", "mediano", "grande"]).plot(cmap="Blues", colorbar=False, ax=ax)
+ax.grid(False); ax.set_xlabel("clase estimada"); ax.set_ylabel("clase real (regla)"); ax.set_title("Clase de tamaño (45 fotos)")
+plt.tight_layout(); savefig("tamano_clases"); plt.show()
+"""),
+        md("## 4. Parámetros para la aplicación"),
+        md(r"""
+Se guardan en `models/umbrales.json`, sección `tamano`. La sección `calidad` (umbrales $t_1, t_2$ sobre $P(\text{mala} \mid x)$, tarea §4.3) se agrega en el mismo archivo sin borrar esta. La tabla por foto queda en `reports/tabla_tamano_fotos_propias.csv`.
+"""),
+        code("""
+ruta = MODELS / "umbrales.json"
+params = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else {}
+params["tamano"] = {
+    "descripcion": "medida_cm = k * L_px; L_px = lado mayor de cv2.minAreaRect sobre la máscara de fruit_on_uniform_background",
+    "max_side_px": MAX_SIDE,
+    "k_cm_por_px": round(K, 6),
+    "terciles_cm": {f: [round(t, 3) for t in terciles[f]] for f in FRUTAS},
+    "clases": SIZE_CLASSES,
+    "validacion": {"esquema": "dejar una fruta fuera (id_fruta)", "fotos": int(len(tam)),
+                   "eam_cm": {f: round(float(tam.loc[tam.fruta == f, "error_cm"].abs().mean()), 3) for f in FRUTAS},
+                   "exactitud_clase": round(float((tam.clase_real == tam.clase_estimada).mean()), 3)},
+}
+ruta.write_text(json.dumps(params, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+cols = ["archivo", "id_fruta", "fruta", "calidad", "celular", "fecha", "medida_cm", "L_px", "d_eq_px", "feret_px",
+        "cm_estimado", "error_cm", "clase_real", "clase_estimada"]
+tam[cols].round(3).to_csv(ROOT / "reports" / "tabla_tamano_fotos_propias.csv", index=False)
+print(json.dumps(params["tamano"], indent=2, ensure_ascii=False))
+"""),
+    ]
+    nb = nbf.v4.new_notebook()
+    nb.cells = cells
+    nb.metadata["kernelspec"] = {"name": "fruitq", "display_name": "Python (fruitq)", "language": "python"}
+    return nb
+
+
 NOTEBOOKS = {
     "eda": ("02_eda.ipynb", eda_notebook),
     "clasicos": ("04_modelos_clasicos.ipynb", modelos_clasicos_notebook),
     "cnn": ("05_cnn_y_comparacion.ipynb", cnn_notebook),
+    "tamano": ("06_tamano.ipynb", tamano_notebook),
 }
 
 

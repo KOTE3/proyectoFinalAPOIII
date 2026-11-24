@@ -20,6 +20,8 @@ models/*
 # Modelos finales (pequeños): se versionan para poder usar el sistema sin reentrenar
 !models/clasico_mejor.joblib
 !models/cnn_lr1e-3_do0.5.pt
+# Parámetros de la aplicación: factor de escala, terciles de tamaño y umbrales de calidad
+!models/umbrales.json
 
 # Sistema
 .DS_Store

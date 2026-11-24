@@ -94,8 +94,60 @@ XGBoost está **sobreconfiado**: P(mala | x) cae casi siempre cerca de 0 o de 1 
 
 Se decide cuando existan etiquetas de `regular`.
 
+## Tamaño en las fotos propias (45 fotos) — `notebooks/06_tamano.ipynb`
+
+Método en `docs/fases/04_modelado.md`. Todas las cifras son de **validación cruzada dejando una fruta fuera**: cada foto se estima con un $\hat k$ ajustado sin su fruta. Tabla por foto: `reports/tabla_tamano_fotos_propias.csv`.
+
+### Longitud en centímetros
+
+| Fruta | EAM | Sesgo medio | Error relativo medio | Error máximo |
+|---|---|---|---|---|
+| Banano | 1.49 cm | +0.76 cm | 10.4 % | 6.65 cm |
+| Guayaba | 0.62 cm | −0.45 cm | 8.5 % | 1.47 cm |
+| Manzana | 0.82 cm | +0.73 cm | 10.8 % | 2.80 cm |
+| **Total** | **0.98 cm** | +0.35 cm | **9.9 %** | 6.65 cm |
+
+- El 71 % de las fotos queda a 1 cm o menos de la medida con regla (`tamano_estimado_vs_real.pdf`).
+- Las fotos se ordenan alrededor de la recta $\text{medida} = \hat k \cdot L_{px}$, salvo las de la sesión `banano buena` (`tamano_escala.pdf`).
+
+### Fuente del error: sesiones de captura
+
+Cada combinación fruta × calidad se fotografió en una sesión distinta:
+
+| Sesión | Celular | Fecha | $L_{px}$ mediana | Sesgo medio |
+|---|---|---|---|---|
+| **banano buena** | moto g(9) play | 2026-11-18 | **419 px** | **+3.37 cm** |
+| banano mala | moto g(9) play | 2026-11-18 | 332 px | −0.50 cm |
+| banano regular | iPhone 13 | 2026-11-16 | 338 px | −0.59 cm |
+| **manzana mala** | moto g(9) play | 2026-11-23 | 216 px | **+1.46 cm** |
+| Otras cinco sesiones | — | — | — | entre −0.62 y +0.38 cm |
+
+- Los bananos `buena` miden apenas 0.7 cm más que los `mala` con regla, pero ocupan un 26 % más de píxeles: **la cámara quedó más cerca de la fruta** en esa sesión. Esas cinco fotos concentran el error: sin ellas, el EAM del banano baja a 0.55 cm y el total a 0.68 cm.
+- `banano buena` y `banano mala` se tomaron el mismo día con el mismo celular, así que **un $k$ por día o por celular no corrige el problema**; solo una distancia de cámara realmente fija lo evita.
+- La mediana limita el efecto de esa sesión sobre $\hat k$, pero no puede corregir las fotos de la propia sesión.
+- Las cinco fotos `manzana_regular` comprimidas (960×1280 px, sin metadatos) tienen un sesgo de +0.38 cm, comparable al de las demás: la compresión no afecta la medición del contorno.
+
+### Clase de tamaño
+
+| Fruta | $t_1$ | $t_2$ | Rango medido | Exactitud | Clase más frecuente |
+|---|---|---|---|---|---|
+| Banano | 13.83 cm | 14.50 cm | 1.5 cm | 60.0 % | 40.0 % |
+| Guayaba | 6.97 cm | 7.10 cm | 2.3 cm | 60.0 % | 33.3 % |
+| Manzana | 7.50 cm | 8.00 cm | 1.5 cm | 46.7 % | 46.7 % |
+| **Total** | | | | **55.6 %** | 40.0 % |
+
+- La exactitud supera a la de asignar siempre la clase más frecuente (40 %), y el 15.6 % de las fotos se confunde entre clases extremas (pequeño ↔ grande) (`tamano_clases.pdf`).
+- **Limitación principal:** las cinco frutas de cada tipo tienen tamaños parecidos, así que los terciles quedan separados por menos que el error de la estimación. En guayaba, $t_2 - t_1 = 0.13$ cm, menos que la resolución de la regla. Con este conjunto, la longitud en cm es una salida más confiable que la clase.
+- Los terciles se calculan con las mismas 45 fotos que se evalúan. Esto no introduce fuga en la estimación en cm, porque los terciles solo definen la clase real; pero describen el tamaño de *estas* frutas, no una norma comercial.
+
+### Mejoras posibles
+- Fijar la cámara en un soporte para que la distancia no cambie entre sesiones.
+- Definir las clases con una norma de calibre comercial (por ejemplo, las NTC del ICONTEC) en lugar de terciles de una muestra pequeña.
+- Incluir un objeto de tamaño conocido en cada foto, para que la escala no dependa de la distancia.
+
 ## Pendiente
 - [x] CNN y comparación con los modelos clásicos
 - [x] Curvas de entrenamiento y validación de la CNN (¿sobreajuste?)
+- [x] Tamaño en centímetros y clase de tamaño en las fotos propias
 - [ ] Desempeño en las fotos propias (generalización y prueba del atajo de nitidez)
 - [ ] Comparación con resultados de la literatura

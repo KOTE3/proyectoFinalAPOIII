@@ -63,3 +63,31 @@ La configuración se eligió por el F1 de **validación** (dropout 0.5). El F1 d
 - La pérdida de train y la de val bajan juntas y casi no se separan (0.19 frente a 0.16): **no hay sobreajuste**. La val queda incluso un poco por debajo de train porque en train la red ve imágenes aumentadas y con dropout activo.
 - En la época 4 la configuración lr = 1e-3 / dropout 0.3 tiene un pico (F1 0.56). Es una inestabilidad típica de una tasa de aprendizaje alta en las primeras épocas, y se recupera en la siguiente.
 - El F1 seguía subiendo en la época 20, así que con más épocas (o una red algo más ancha) podría mejorar. No se hizo por el costo en CPU (~35 min por corrida).
+
+## Estimación de tamaño en centímetros (`notebooks/06_tamano.ipynb`)
+
+**Formulación.** Con la cámara a distancia fija (30 cm), la proyección es aproximadamente una escala uniforme: la longitud real de la fruta es proporcional a su longitud en la imagen,
+
+$$\text{medida}_{cm} \approx k \cdot L_{px}.$$
+
+El único parámetro es el factor de escala $k$ (cm/px). Se estima con las 45 fotos propias, cada una medida con regla:
+
+$$\hat k = \operatorname{mediana}_i\left(\frac{\text{medida}_{cm,i}}{L_{px,i}}\right).$$
+
+- **¿Por qué la mediana?** Si en una sesión la cámara quedó más cerca, todas sus fotos tienen cocientes más bajos. La media o los mínimos cuadrados se desplazan hacia esos valores; la mediana los ignora mientras sean menos de la mitad.
+- **¿Qué es $L_{px}$?** El lado mayor del rectángulo de área mínima que contiene la máscara (`cv2.minAreaRect`), con la imagen reducida a 1024 px por el lado mayor. Se eligió por la definición de la medida con regla (diámetro mayor en manzana y guayaba, largo de punta a punta en banano), no por su error. No depende de la orientación de la fruta en la foto.
+- **Validación.** Se deja fuera una fruta física (`id_fruta`, sus tres fotos), se estima $\hat k$ con las otras 14 frutas y se predicen las tres fotos excluidas. Ninguna foto se evalúa con un $\hat k$ que la usó para ajustarse.
+
+**Alternativas comparadas** (error absoluto medio validado, EAM):
+
+| Longitud en píxeles | $\hat k$ (cm/px) | Variación de medida/$L$ | EAM banano | EAM guayaba | EAM manzana | EAM total |
+|---|---|---|---|---|---|---|
+| **Lado mayor del rectángulo mínimo (elegida)** | 0.0404 | 12.0 % | 1.49 cm | 0.62 cm | 0.82 cm | **0.98 cm** |
+| Diámetro equivalente $2\sqrt{A/\pi}$; banano: lado mayor | 0.0416 | 15.4 % | 1.61 cm | 1.15 cm | 0.81 cm | 1.19 cm |
+| Diámetro de Feret máximo | 0.0374 | 12.3 % | 1.78 cm | 0.52 cm | 0.87 cm | 1.06 cm |
+
+El diámetro equivalente es el de un círculo de igual área. En frutas ovaladas, como la guayaba, es menor que el diámetro mayor medido con regla, y por eso su error en guayaba casi se duplica. El diámetro de Feret es la mayor distancia entre dos puntos del contorno; en el banano curvo depende más de la forma de las puntas que el rectángulo mínimo.
+
+**Clases de tamaño.** Los umbrales $t_1, t_2$ son los terciles de `medida_cm` dentro de cada fruta: pequeño si $x < t_1$, mediano si $t_1 \le x < t_2$, grande si $x \ge t_2$. Se calculan por fruta porque un banano pequeño sigue siendo más largo que una manzana grande.
+
+Los parámetros finales ($\hat k$ con las 45 fotos y los terciles) se guardan en `models/umbrales.json`, sección `tamano`.

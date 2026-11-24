@@ -1,0 +1,36 @@
+{
+  "tamano": {
+    "descripcion": "medida_cm = k * L_px; L_px = lado mayor de cv2.minAreaRect sobre la máscara de fruit_on_uniform_background",
+    "max_side_px": 1024,
+    "k_cm_por_px": 0.040413,
+    "terciles_cm": {
+      "banano": [
+        13.833,
+        14.5
+      ],
+      "guayaba": [
+        6.967,
+        7.1
+      ],
+      "manzana": [
+        7.5,
+        8.0
+      ]
+    },
+    "clases": [
+      "pequeno",
+      "mediano",
+      "grande"
+    ],
+    "validacion": {
+      "esquema": "dejar una fruta fuera (id_fruta)",
+      "fotos": 45,
+      "eam_cm": {
+        "banano": 1.489,
+        "guayaba": 0.619,
+        "manzana": 0.823
+      },
+      "exactitud_clase": 0.556
+    }
+  }
+}
