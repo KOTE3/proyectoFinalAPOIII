@@ -61,7 +61,18 @@ Se presentan en orden de dependencia.
 - Sus anotaciones están en `data/labels/anotaciones_propias.csv` y se leen con `fruitq.data.read_annotations`.
 - Formato del CSV: `docs/PLAN_DE_TRABAJO.md` §4.7.
 - Las tres fotos de una misma fruta comparten `id_fruta`. Cualquier partición o validación cruzada con estas fotos debe agrupar por esa columna.
-- Si se agregan fotos con otro celular, se nombran con el prefijo `prueba_`.
+- **Celulares.** Según los metadatos EXIF, las fotos provienen de dos celulares que el modelo nunca vio durante el entrenamiento:
+
+  | Fruta | buena | regular | mala |
+  |---|---|---|---|
+  | Banano | moto g(9) play | iPhone 13 | moto g(9) play |
+  | Guayaba | iPhone 13 | iPhone 13 | moto g(9) play |
+  | Manzana | iPhone 13 | sin metadatos (comprimidas) | moto g(9) play |
+
+  El celular está parcialmente asociado a la calidad, así que un análisis de resultados por celular debe interpretarse con cuidado: no separa el efecto de la cámara del efecto de la calidad.
+- **Fotos comprimidas.** Las 5 fotos `manzana_regular_0*.jpg` están a 960×1280 px y muy comprimidas (unos 30 KB), porque pasaron por una aplicación de mensajería; no se conservan los originales. La segmentación funciona con ellas, pero conviene revisar por separado sus resultados y mencionarlas como limitación.
+- **Fechas.** Las fotos se tomaron entre el 16 y el 23 de noviembre de 2026. Cada foto se etiquetó según el estado visible en ella.
+- **Fotos de otros celulares (opcional).** Si se agregan, se nombran con el prefijo `prueba_` y el lector las marca como `conjunto = prueba_camara`.
 
 ### 4.2 Etiquetado de recortes
 
@@ -80,7 +91,7 @@ $$\hat y = \begin{cases} \text{buena} & p < t_1 \\ \text{regular} & t_1 \le p < 
    - las fotos propias del conjunto `principal`.
 2. XGBoost está sobreconfiado (`docs/fases/05_evaluacion.md`), así que conviene calibrar $p$ con regresión logística (Platt) o isotónica antes de elegir los umbrales. Comparar también con la CNN y con el ensamble, que tienen probabilidades más suaves.
 3. Elegir $t_1 < t_2$ por búsqueda en rejilla, maximizando el F1-macro de 3 clases sobre los **recortes etiquetados**.
-4. Evaluar una sola vez con las **fotos propias**: matriz de confusión 3×3, F1-macro y recall de `mala`. Repetir la evaluación con las fotos de `conjunto = prueba_camara`, que miden la generalización a otro celular.
+4. Evaluar una sola vez con las **fotos propias**: matriz de confusión 3×3, F1-macro y recall de `mala`. Reportar también los resultados por celular (§4.1) y, si existen, los de las fotos `conjunto = prueba_camara`.
 5. Para respetar la escala con la que se entrenó el modelo, preparar así las fotos propias antes de extraer las características:
    - leer con `read_image_max(path, 1024)`;
    - segmentar con `fruit_on_uniform_background`;
@@ -99,7 +110,8 @@ $$\hat y = \begin{cases} \text{buena} & p < t_1 \\ \text{regular} & t_1 \le p < 
    - banano: largo, como el lado mayor de `cv2.minAreaRect`.
 2. Conversión a centímetros. No se tomaron fotos con moneda: la cámara estuvo a distancia fija y cada fruta se midió con regla. Por eso el factor de escala se estima directamente:
 
-   $$k = \operatorname{mediana}\left(rac{	ext{medida}_{cm}}{L_{px}}ight).$$
+   $$k = \operatorname{mediana}\left(rac{	ext{medida}_{cm}}{L_{px}}
+ight).$$
 
    Para no evaluar con los mismos datos con los que se ajusta, $k$ se calcula con validación cruzada agrupada por `id_fruta`.
 

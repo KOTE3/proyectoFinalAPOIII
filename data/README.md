@@ -27,7 +27,7 @@ Para compartir las fotos con la clase usar la carpeta común acordada (Drive / r
 - Las 5 frutas de cada tipo se eligen de tamaños distintos (pequeñas, medianas y grandes).
 - Las tres fotos de una misma fruta llevan el **mismo `id_fruta`**, para que nunca queden repartidas entre train y test.
 - Cada fruta se mide con regla en cada foto. Como la cámara está siempre a la misma distancia, esas medidas sirven para convertir píxeles a centímetros; no se usó moneda de referencia.
-- Además, los integrantes 2 y 3 toman 5–10 fotos cada uno con su propio celular (prefijo `prueba_` en el nombre). Esas fotos solo se usan para evaluar la generalización a otras cámaras.
+- De forma opcional, los integrantes 2 y 3 pueden tomar 5–10 fotos cada uno con su propio celular (prefijo `prueba_` en el nombre). Esas fotos solo se usan para evaluar la generalización a otras cámaras.
 
 ## Protocolo de recolección
 

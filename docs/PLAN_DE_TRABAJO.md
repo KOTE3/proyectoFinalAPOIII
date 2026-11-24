@@ -32,7 +32,7 @@ Resultado actual (test, 2 540 imágenes, clases buena/mala): XGBoost obtiene F1-
 
 | Tarea | Sebastián Mejía | Integrante 2 | Integrante 3 |
 |---|---|---|---|
-| Fotografías (sección 4) | **Conjunto principal**: 45 fotos de las 3 frutas | **Prueba de cámara**: 5–10 fotos con su celular | **Prueba de cámara**: 5–10 fotos con su celular |
+| Fotografías (sección 4) | **Conjunto principal**: 45 fotos de las 3 frutas | **Prueba de cámara (opcional)**: 5–10 fotos con su celular | **Prueba de cámara (opcional)**: 5–10 fotos con su celular |
 | Etiquetado de recortes | Parte 1 | Parte 2 | Parte 3 |
 | Recortes en común (acuerdo entre etiquetadores) | 50 de la parte 2 | 50 de la parte 3 | 50 de la parte 1 |
 | Filas en `data/labels/anotaciones_propias.csv` | Las 45 del conjunto principal | Las de sus fotos de prueba | Las de sus fotos de prueba |
@@ -106,16 +106,16 @@ Se compran **5 frutas de cada tipo** y cada una se fotografía **tres veces**, a
 
 - Las 5 frutas de cada tipo se eligen de tamaños distintos: 2 pequeñas, 2 medianas y 1 grande, o una combinación similar.
 - 45 fotos están dentro del rango de 30–50 que pide el enunciado. Si una foto sale defectuosa, se repite el mismo día.
-- **Ventaja del seguimiento.** La misma fruta aparece en los tres estados, así que la diferencia entre `buena`, `regular` y `mala` se debe solo al deterioro y no a que sean frutas distintas.
+- **Registro de la captura.** Las 45 fotos se tomaron entre el 16 y el 23 de noviembre de 2026 con dos celulares (`TRASPASO.md` §4.1). Cada foto se etiquetó según el estado visible en ella.
 - Las tres fotos de una fruta comparten el mismo `id_fruta`, de modo que nunca quedan repartidas entre entrenamiento y prueba.
 - **Identificación de cada fruta.** Cada fruta se guarda sobre un papel con su número (`ban_01`, `ban_02`, …). Si se marca la fruta, la marca va en la cara que no mira a la cámara. Ningún papel, cinta ni marca debe aparecer en la foto.
 
 **¿Por qué una sola persona toma el conjunto principal?**
-- Todas las fotos comparten celular, montaje, luz y criterio de calidad.
-- Así, ninguna diferencia de cámara queda asociada a una fruta o a una calidad. Esa asociación es la que el modelo podría aprender como atajo.
+- Todas las fotos comparten montaje, luz y criterio de calidad. Se usaron dos celulares; la distribución de fotos por celular está en `TRASPASO.md` §4.1.
 - Hay un solo lote de fruta madurando y un solo montaje fijo durante la semana.
 
-**Fotos de prueba de cámara (integrantes 2 y 3): 5–10 fotos cada uno.**
+**Fotos de prueba de cámara (integrantes 2 y 3, opcional): 5–10 fotos cada uno.**
+- El conjunto principal ya proviene de dos celulares que el modelo nunca vio durante el entrenamiento. Estas fotos solo amplían la prueba de generalización.
 - Con su propio celular y el mismo protocolo, mezclando las tres frutas y las tres calidades.
 - No se usan para entrenar ni para elegir modelos. Solo miden si el sistema generaliza a cámaras que nunca vio, una de las preguntas del análisis de resultados.
 - Se nombran con el prefijo `prueba_`; el lector del CSV las marca como `conjunto = prueba_camara`.
