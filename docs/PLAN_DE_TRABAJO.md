@@ -18,7 +18,7 @@ Documento de coordinación interna: estado del proyecto, reparto de tareas, prot
 | Estimación de tamaño en cm y clase de tamaño | Completo | `notebooks/06_tamano.ipynb`, `models/umbrales.json` |
 | Paso de 2 a 3 clases | Completo | `notebooks/07_tres_clases.ipynb`, `models/umbrales.json` |
 | Evaluación en las fotos propias (generalización y atajo de nitidez) | Completo: el modelo no generaliza | `docs/fases/05_evaluacion.md` |
-| Aplicación Streamlit con cámara | Pendiente | `app/` |
+| Aplicación Streamlit con cámara | Completa | `app/app.py`, `docs/fases/06_despliegue.md` |
 | Diagrama CRISP-DM propio y diagrama de arquitectura | Pendiente | `reports/figures/` |
 | Tabla de ética (PI1), matriz de impacto (PI2) | Completo | `docs/fases/07_etica_impactos.md` |
 | Informe IEEE (máx. 7 páginas) | Pendiente | `reports/informe/` |

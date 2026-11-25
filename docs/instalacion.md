@@ -54,6 +54,7 @@ Con eso basta para ejecutar las pruebas y las aplicaciones:
 ```bash
 pytest                                  # pruebas unitarias
 streamlit run app/etiquetar.py          # herramienta de etiquetado de recortes
+streamlit run app/app.py                # aplicación de calidad y tamaño con cámara
 ```
 
 ## 4. Reproducción completa

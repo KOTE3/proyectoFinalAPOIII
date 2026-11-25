@@ -48,11 +48,23 @@ def read_image_max(path: str | Path, max_side: int = 256) -> np.ndarray:
     misma escala hace comparables las características (p. ej. la varianza del
     Laplaciano depende de la resolución) y acelera la segmentación.
     """
-    img = read_image(path)
+    return resize_max(read_image(path), max_side)
+
+
+def resize_max(img: np.ndarray, max_side: int) -> np.ndarray:
+    """Reduce una imagen ya cargada para que su lado mayor sea ``max_side`` (nunca la amplía)."""
     h, w = img.shape[:2]
     s = max_side / max(h, w)
     if s < 1:
         img = cv2.resize(img, (round(w * s), round(h * s)), interpolation=cv2.INTER_AREA)
+    return img
+
+
+def decode_image(data: bytes) -> np.ndarray:
+    """Decodifica una imagen recibida como bytes (p. ej. desde la aplicación) en BGR."""
+    img = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), cv2.IMREAD_COLOR)
+    if img is None:
+        raise IOError("No se pudo decodificar la imagen.")
     return img
 
 

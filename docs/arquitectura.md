@@ -22,8 +22,8 @@ flowchart LR
 La rama de XGBoost es el modelo principal: tiene el mejor F1-macro en test (0.964). La CNN se conserva como modelo de deep learning comparado; para la clase `regular`, sus probabilidades más suaves no superaron a XGBoost en la validación con recortes (fase 4).
 
 Estado de los bloques:
-- **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala; los umbrales de 3 clases sobre la probabilidad de XGBoost (`fruitq.quality`, `models/umbrales.json`); y la estimación de tamaño en centímetros (sección 5).
-- **Pendientes:** la interfaz. Además, el clasificador no generaliza a las fotos propias (`docs/fases/05_evaluacion.md`); la aplicación debe advertirlo.
+- **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala; los umbrales de 3 clases sobre la probabilidad de XGBoost (`fruitq.quality`, `models/umbrales.json`); la estimación de tamaño en centímetros (sección 5); y la interfaz Streamlit con cámara (`app/app.py`), que usa la rama de XGBoost.
+- **Limitación:** el clasificador no generaliza a las fotos propias (`docs/fases/05_evaluacion.md`); la aplicación lo advierte en todo momento (`docs/fases/06_despliegue.md`).
 
 ## 2. Segmentación (`src/fruitq/segmentation.py`)
 
@@ -92,6 +92,8 @@ Entrenamiento:
 
 La segmentación domina el tiempo total. Aun así, el sistema procesa unas 3 imágenes por segundo, suficiente para la interfaz con cámara.
 
+En la aplicación, las fotos propias se segmentan con `fruit_on_uniform_background`, sin GrabCut: el análisis completo tarda una mediana de 129 ms por foto de 12 MP, dominado por la lectura de la imagen (`docs/fases/06_despliegue.md` §4).
+
 ## 7. Organización del código
 
 | Módulo | Responsabilidad |
@@ -103,5 +105,7 @@ La segmentación domina el tiempo total. Aun así, el sistema procesa unas 3 im�
 | `src/fruitq/size.py` | Estimación de tamaño |
 | `src/fruitq/data.py` | Firmas de imagen, agrupación de casi duplicados y partición sin fuga |
 | `src/fruitq/cnn.py` | Preprocesamiento y arquitectura de la CNN |
+| `src/fruitq/quality.py` | Clase de calidad en tres niveles y preparación de fotos nuevas |
+| `src/fruitq/predict.py` | Análisis completo de una foto para la aplicación (calidad y tamaño) |
 | `scripts/` | Puntos de entrada del flujo de datos y del entrenamiento |
 | `app/` | Interfaces Streamlit |

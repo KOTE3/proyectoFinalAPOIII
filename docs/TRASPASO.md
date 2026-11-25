@@ -25,6 +25,7 @@ Documento de entrega del trabajo técnico a los integrantes que continúan el pr
 | Tamaño en centímetros y clase de tamaño | Terminado | `notebooks/06_tamano.ipynb`, `models/umbrales.json`, §4.4 |
 | Tabla de decisiones éticas (PI1) y matriz de impactos (PI2) | Terminadas | `docs/fases/07_etica_impactos.md` |
 | Clase `regular` (tres clases) y evaluación en las fotos propias | Terminado; el modelo no generaliza a las fotos propias | `notebooks/07_tres_clases.ipynb`, §4.3 |
+| Aplicación con cámara | Terminada | `app/app.py`, `src/fruitq/predict.py`, §4.5 |
 
 **Resultados en test (2 540 imágenes, buena/mala):**
 
@@ -131,7 +132,7 @@ $$\hat y = \begin{cases} \text{buena} & p < t_1 \\ \text{regular} & t_1 \le p < 
 - **Clases de tamaño:** terciles de `medida_cm` por fruta; exactitud de 55.6 % frente a 40 % de asignar siempre la clase más frecuente. Los terciles quedan separados por menos que el error de la estimación (en guayaba, 6.97 y 7.10 cm), porque las cinco frutas de cada tipo tienen tamaños parecidos.
 - **Para la aplicación (§4.5):** `models/umbrales.json`, sección `tamano` (`k_cm_por_px`, `max_side_px`, `terciles_cm` por fruta). La aplicación debe reducir la imagen a 1024 px antes de medir y conocer el tipo de fruta para asignar la clase. La sección `calidad` (§4.3) se agrega al mismo archivo sin borrar la de tamaño.
 
-### 4.5 Aplicación con cámara (`app/app.py`)
+### 4.5 Aplicación con cámara (`app/app.py`) (terminado)
 
 - **Entrada:** `st.camera_input` y `st.file_uploader`.
 - **Proceso:**
@@ -146,6 +147,12 @@ $$\hat y = \begin{cases} \text{buena} & p < t_1 \\ \text{regular} & t_1 \le p < 
   - tiempo de procesamiento.
 - Guardar los umbrales y el factor $k$ (§4.4) en un archivo versionado, por ejemplo `models/umbrales.json`, en lugar de escribirlos en el código.
 - Documentar en `docs/fases/06_despliegue.md`, incluida la latencia medida.
+
+**Resultado** (`app/app.py`; análisis en `src/fruitq/predict.py`, pruebas en `tests/test_predict.py`):
+- La aplicación recibe la foto por cámara o archivo y muestra el contorno, la calidad con su probabilidad calibrada (Platt), el tamaño en cm y su clase, el tiempo de procesamiento y una advertencia permanente sobre la falta de generalización.
+- El tipo de fruta lo elige el usuario, porque el modelo no lo reconoce; solo se usa para la clase de tamaño.
+- En las 45 fotos propias reproduce los notebooks: misma probabilidad (dentro del redondeo de las tablas), misma longitud en píxeles y misma clase de calidad (`scripts/medir_app.py`).
+- Latencia: mediana de 129 ms por foto de 12 MP y de 16 ms con fotos de 640 px, en un equipo de 2 núcleos. Detalle y desglose por etapa en `docs/fases/06_despliegue.md`.
 
 ### 4.6 Entregables escritos
 

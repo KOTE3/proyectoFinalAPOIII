@@ -4,8 +4,8 @@ Proyecto final del curso **Algoritmos y Programación III** (2026-2), Ingenierí
 
 #### Estado del proyecto: Activo
 
-- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, etiquetado de recortes, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas y matriz de impactos.
-- **En curso:** interfaz con cámara, diagramas, informe y video.
+- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, etiquetado de recortes, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas, matriz de impactos y aplicación con cámara.
+- **En curso:** diagramas, informe y video.
 
 ## Integrantes
 
@@ -88,6 +88,7 @@ El objetivo es ofrecer un criterio objetivo y reproducible que apoye a pequeños
 - [CNN y comparación con XGBoost: McNemar, calibración y Grad-CAM](notebooks/05_cnn_y_comparacion.ipynb)
 - [Arquitectura del sistema](docs/arquitectura.md)
 - [Documentación por fase CRISP-DM](docs/fases/)
+- [Aplicación con cámara: funcionamiento, verificación y latencia](docs/fases/06_despliegue.md) (`streamlit run app/app.py`)
 - Informe IEEE: `reports/informe/` (en elaboración)
 - Video de presentación: _enlace por completar_
 
