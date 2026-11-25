@@ -20,7 +20,7 @@ Documento de coordinación interna: estado del proyecto, reparto de tareas, prot
 | Evaluación en las fotos propias (generalización y atajo de nitidez) | Pendiente | `docs/fases/05_evaluacion.md` |
 | Aplicación Streamlit con cámara | Pendiente | `app/` |
 | Diagrama CRISP-DM propio y diagrama de arquitectura | Pendiente | `reports/figures/` |
-| Tabla de ética (PI1), matriz de impacto (PI2) | PI1 completa; PI2 en borrador | `docs/fases/07_etica_impactos.md` |
+| Tabla de ética (PI1), matriz de impacto (PI2) | Completo | `docs/fases/07_etica_impactos.md` |
 | Informe IEEE (máx. 7 páginas) | Pendiente | `reports/informe/` |
 | Video (máx. 10 minutos) | Pendiente | — |
 

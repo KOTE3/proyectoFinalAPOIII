@@ -23,7 +23,7 @@ Documento de entrega del trabajo técnico a los integrantes que continúan el pr
 | 45 fotografías propias (5 frutas × 3 estados × 3 tipos) y sus anotaciones | Terminado | `data/labels/anotaciones_propias.csv`, `docs/PLAN_DE_TRABAJO.md` §4 |
 | Etiquetado de recortes | Parcial: falta el integrante 2 | `data/labels/recortes_*.csv`, §4.2 |
 | Tamaño en centímetros y clase de tamaño | Terminado | `notebooks/06_tamano.ipynb`, `models/umbrales.json`, §4.4 |
-| Tabla de decisiones éticas (PI1) | Terminada | `docs/fases/07_etica_impactos.md` |
+| Tabla de decisiones éticas (PI1) y matriz de impactos (PI2) | Terminadas | `docs/fases/07_etica_impactos.md` |
 
 **Resultados en test (2 540 imágenes, buena/mala):**
 
