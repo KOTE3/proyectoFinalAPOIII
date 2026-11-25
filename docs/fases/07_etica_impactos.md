@@ -1,13 +1,62 @@
 # Ética e impactos (competencias PI1 y PI2)
 
+## Marco de referencia
+
+- **Código de Ética y Conducta Profesional de la ACM (2018).** Sus principios se citan por número.
+- **Ley 842 de 2003, Título IV:** código de ética para el ejercicio de la ingeniería y sus profesiones afines en Colombia.
+- **Ley 1581 de 2012:** régimen general de protección de datos personales en Colombia.
+
+| Principio | Enunciado |
+|---|---|
+| ACM 1.1 | Contribuir a la sociedad y al bienestar humano |
+| ACM 1.2 | Evitar el daño |
+| ACM 1.3 | Ser honesto y digno de confianza |
+| ACM 1.4 | Ser justo y actuar para no discriminar |
+| ACM 1.5 | Respetar el trabajo necesario para producir nuevas ideas y obras |
+| ACM 1.6 | Respetar la privacidad |
+| ACM 2.5 | Evaluar los sistemas y sus impactos de forma completa, incluidos los riesgos |
+| ACM 3.1 | Hacer del bien público la preocupación central |
+
 ## Tabla de decisiones éticas (PI1)
-| Situación / decisión | Riesgo | Principio del código de ética | Medida adoptada |
-|---|---|---|---|
-| Fotos tomadas en plazas y supermercados | Captar personas o datos sin consentimiento | Respeto a la privacidad | Solo se encuadra la fruta; se pide permiso; se descartan fotos con personas |
-| Uso de un dataset de terceros | Plagio o violación de licencia | Honestidad y respeto a la propiedad intelectual | Se cita el dataset y se revisa su licencia |
-| Desbalanceo o sesgo hacia ciertas frutas o condiciones de luz | Clasificación injusta del producto de algunos productores | Responsabilidad social, equidad | Se reporta el desempeño por fruta y por fuente; pesos de clase |
-| Errores del modelo (fruta mala aprobada) | Riesgo para la salud del consumidor | Seguridad y bienestar público | Se prioriza el recall de `mala`; se indica la confianza; hay revisión humana en casos dudosos |
-| Sustitución de mano de obra | Pérdida de empleo de clasificadores | Responsabilidad social | Se plantea como herramienta de apoyo, no de reemplazo |
+
+La columna **Estado** indica si la medida ya está aplicada en el proyecto o si sigue pendiente.
+
+| # | Tema | Situación o decisión | Riesgo | Principio | Medida adoptada | Estado |
+|---|---|---|---|---|---|---|
+| E1 | Propiedad intelectual | Uso del dataset *Fruit Quality Classification* de Kaggle. Se publica como CC0, pero es una copia de FruitNet (Meshram y Patil, 2022), cuyo artículo se publicó con licencia CC BY 4.0. | Atribuir la autoría a quien solo redistribuyó los datos; omitir la fuente original, que el enunciado del curso considera fraude. | ACM 1.5, ACM 1.3 | Se citan la página de Kaggle y el artículo original. El repositorio no redistribuye las imágenes: se descargan con `scripts/download_data.py`. | Parcial: citado en el `README.md`; falta la referencia en el informe |
+| E2 | Sesgo del dataset | Las imágenes de Kaggle se tomaron en India, con las variedades, fondos y cámaras de ese contexto. La aplicación se usaría con fruta colombiana. | Menor desempeño con variedades locales de guayaba o banano, que perjudica al productor cuyo producto no se parece al del dataset. | ACM 1.4, ACM 2.5 | Se fotografiaron 15 frutas compradas en Colombia (45 fotos) para medir la generalización a fruta local. | Pendiente: evaluar el clasificador en las fotos propias |
+| E3 | Sesgo del dataset | El error en test no es igual entre frutas: 10.4 % en manzana buena y 8.1 % en naranja buena, frente a 0 % en banano y limón buenos. | Rechazo injusto de fruta sana, con pérdidas concentradas en los productores de ciertas frutas. | ACM 1.4 | Se reporta la exactitud por fruta y calidad (fase 5) y se usan pesos de muestra por estrato fruta × calidad. La aplicación debe informar el desempeño de la fruta analizada. | Aplicada en la evaluación; pendiente en la aplicación |
+| E4 | Sesgo del dataset | Las características de nitidez son las más importantes del modelo, pero su relación con la calidad cambia de dirección según la fruta. | El modelo decide por la cámara o la sesión de captura y no por el defecto; con otra cámara la decisión cambia sin que el usuario lo note. | ACM 2.5, ACM 1.3 | Ablación documentada en la fase 4 (F1 0.957 con todas las características, 0.943 sin nitidez). Las fotos propias, tomadas con dos celulares distintos, sirven para comprobarlo. | Pendiente: prueba del atajo en las fotos propias |
+| E5 | Etiquetado | La clase `regular` no existe en Kaggle y depende del criterio de cada etiquetador. En los 50 recortes comunes, κ de Cohen = 0.78 (ponderado: 0.83), un acuerdo sustancial según la escala de Landis y Koch, sobre los 20 recortes válidos para ambos etiquetadores, con intervalo de confianza del 95 % de [0.52, 1.00] por *bootstrap*. Los desacuerdos solo ocurren entre clases vecinas. | El modelo aprende el criterio de una sola persona, o se reporta un desempeño mayor del que permite el acuerdo humano. | ACM 1.3, ACM 2.5 | Criterios escritos comunes (`docs/ETIQUETADO.md` §3), 50 recortes comunes y κ reportado. Las etiquetas no se editan después de calcular el acuerdo: las discrepancias se resuelven con una adjudicación documentada. | Parcial: falta el tercer etiquetador |
+| E6 | Privacidad | Toma de fotos de fruta en plazas, supermercados o viviendas. | Captar personas, rostros o datos de vendedores sin consentimiento. | ACM 1.6, Ley 1581 de 2012 | Solo se encuadra la fruta, se pide permiso en lugares públicos y se descartan las fotos con personas. Las 45 fotos propias muestran solo la fruta sobre fondo uniforme. | Aplicada |
+| E7 | Privacidad | 20 de las 45 fotos propias (todas las del iPhone 13) conservan las coordenadas GPS en sus metadatos EXIF. | Revelar la ubicación de la vivienda de un integrante al compartir las fotos con otros grupos, como pide el enunciado. | ACM 1.6, Ley 1581 de 2012 | Las imágenes no se versionan en Git (`.gitignore`). Antes de compartirlas fuera del grupo se eliminan los metadatos de ubicación. | Aplicada en Git; pendiente antes de compartir |
+| E8 | Errores del modelo | Fruta mala aprobada como buena. En test, 52 de 1 048 frutas malas (5.0 %) se clasifican como buenas, y en 34 de esos 52 casos el modelo asigna P(mala) < 0.2. | Fruta en mal estado llega al consumidor. Una revisión humana limitada a los casos dudosos no detectaría la mayoría de estos errores, porque el modelo se equivoca con alta confianza. | ACM 1.2, ACM 3.1, Ley 842 de 2003 | El recall de `mala` es una métrica principal (fase 1). El sistema se presenta como apoyo a la inspección, no como certificación de inocuidad. La aplicación debe mostrar la probabilidad junto con esta advertencia. | Aplicada en la evaluación; pendiente en la aplicación |
+| E9 | Errores del modelo | La clase `regular` se obtendrá con umbrales sobre P(mala \| x), pero XGBoost está sobreconfiado: solo el 4.4 % de las probabilidades de test cae entre 0.2 y 0.8. | Presentar como `regular` una decisión sin respaldo en los datos. | ACM 1.3, ACM 2.5 | Los umbrales se ajustan con probabilidades calibradas y con los recortes etiquetados, y se evalúan antes de mostrarse en la aplicación. | Pendiente (tarea 4.3) |
+| E10 | Errores del modelo | Estimación del tamaño: error absoluto medio de 0.98 cm y 55.6 % de exactitud en la clase de tamaño. Una sesión con la cámara más cerca tiene un sesgo de +3.37 cm. | Fijar precios o rechazar lotes con una medida que no es confiable a nivel de clase. | ACM 1.3, ACM 2.5 | Las limitaciones están documentadas en la fase 5. La aplicación debe mostrar la longitud en cm con su error típico y presentar la clase de tamaño como orientativa. | Aplicada en la documentación; pendiente en la aplicación |
+| E11 | Honestidad en los resultados | El 30 % de las imágenes de Kaggle son casi duplicados, y se comparan varios modelos y configuraciones. | Resultados inflados por fuga de información o por elegir el modelo mirando el test. | ACM 1.3, ACM 2.5 | Partición por grupos de casi duplicados, selección con validación cruzada y un solo uso del test (fase 5). Semilla fija 42. También se reportan los resultados desfavorables, como la exactitud de la clase de tamaño. | Aplicada |
+| E12 | Empleo | Automatizar la clasificación que hoy hacen personas en plazas, centrales de abasto y empacadoras. | Pérdida de empleo de clasificadores manuales, muchas veces trabajadores con pocas alternativas laborales. | ACM 1.1, ACM 3.1 | El sistema se diseña como herramienta de apoyo: la decisión final queda en la persona, que puede revisar más fruta con un criterio uniforme. El análisis económico está en la matriz de impactos. | Aplicada en el diseño |
+
+### Responsabilidad ante los errores
+
+- El sistema **recomienda** una clase; quien vende o compra la fruta toma la decisión final. Esta distinción debe quedar visible en la aplicación y en el informe.
+- Las cifras de error (E3, E8, E10) se miden en datos que el modelo no vio. Aun así, solo garantizan el desempeño en condiciones parecidas a las del dataset, como establece E2.
+- El grupo responde por lo que afirma del sistema: ninguna cifra se presenta sin el conjunto de datos y el procedimiento que la producen.
+
+### Acciones pendientes que salen de la tabla
+
+- [ ] E1: citar FruitNet (Meshram y Patil, 2022, *Data in Brief* 40, 107686, doi:10.1016/j.dib.2021.107686) en las referencias del informe.
+- [ ] E2 y E4: evaluar el clasificador en las fotos propias y comparar los resultados por celular.
+- [ ] E3, E8 y E10: en la aplicación, mostrar la probabilidad, el desempeño por fruta, el error típico del tamaño y la advertencia de uso como apoyo.
+- [ ] E5: incorporar el tercer etiquetador y recalcular el acuerdo.
+- [ ] E7: eliminar los metadatos de ubicación antes de compartir las fotos fuera del grupo.
+- [ ] E9: calibrar las probabilidades y evaluar los umbrales de la clase `regular`.
+
+### Origen de las cifras
+
+- Errores del clasificador (E3, E8, E9): `models/clasico_mejor.joblib` sobre la partición de test de `data/processed/features.parquet`, con umbral 0.5.
+- Acuerdo entre etiquetadores (E5): recortes comunes de `data/labels/recortes_giuseppe.csv` y `data/labels/recortes_sebastian.csv`, sin la categoría `descartar`; intervalo con 5 000 remuestreos y semilla 42.
+- Metadatos (E7): lectura del bloque EXIF de `data/raw/propias/*.jpg`.
+- Tamaño (E10): `notebooks/06_tamano.ipynb`. Casi duplicados (E11): fase 2.
 
 ## Matriz de impactos (PI2)
 | Dimensión | Impacto positivo | Riesgo | Mitigación |

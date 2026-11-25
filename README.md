@@ -4,8 +4,8 @@ Proyecto final del curso **Algoritmos y Programación III** (2026-2), Ingenierí
 
 #### Estado del proyecto: Activo
 
-- **Completado:** clasificación buena/mala con modelos clásicos y CNN.
-- **En curso:** fotos propias, clase `regular`, tamaño en centímetros e interfaz con cámara.
+- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, tamaño en centímetros y tabla de decisiones éticas.
+- **En curso:** etiquetado de recortes, clase `regular`, evaluación en las fotos propias, interfaz con cámara, matriz de impactos, diagramas, informe y video.
 
 ## Integrantes
 
@@ -164,6 +164,7 @@ pytest
 ## Referencias de terceros
 
 - Dataset: ryandpark, *Fruit Quality Classification*, Kaggle. https://www.kaggle.com/datasets/ryandpark/fruit-quality-classification
+- Fuente original del dataset: V. Meshram y K. Patil, "FruitNet: Indian fruits image dataset with quality for machine learning applications", *Data in Brief*, vol. 40, art. 107686, 2022. doi:10.1016/j.dib.2021.107686. El artículo se publica con licencia CC BY 4.0, que exige citar a sus autores.
 - Bibliotecas: OpenCV, scikit-image, scikit-learn, XGBoost, PyTorch, Streamlit, NumPy, pandas y Matplotlib (ver `requirements.txt`).
 
 Todo código o dato de terceros usado en el proyecto se cita aquí y en el informe.

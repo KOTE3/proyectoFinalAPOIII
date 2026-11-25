@@ -24,4 +24,4 @@ Clasificar una fruta `mala` como `buena` (llega al cliente) es más costoso que 
 Dada una imagen $x \in \mathbb{R}^{H\times W\times 3}$, se busca
 $$f_\theta : x \mapsto (\hat y_q, \hat y_s),\quad \hat y_q \in \{\text{buena},\text{regular},\text{mala}\},\ \hat y_s \in \{\text{peq.},\text{med.},\text{gr.}\}$$
 - Calidad: $\hat y_q = \arg\max_k p_\theta(k\mid x)$, con $\theta^* = \arg\min_\theta -\frac{1}{N}\sum_i \sum_k w_k\, y_{ik}\log p_\theta(k\mid x_i)$ (entropía cruzada ponderada por clase).
-- Tamaño: máscara $M = \text{seg}(x)$, área $A=\sum M$, diámetro equivalente $d = 2\sqrt{A/\pi}$, normalizado $\tilde d = d/\min(H,W)$; clase por umbrales $t_1,t_2$ (terciles por fruta).
+- Tamaño: máscara $M = \text{seg}(x)$; longitud $L_{px}$ = lado mayor del rectángulo de área mínima que contiene $M$; longitud real $\hat\ell = \hat k \cdot L_{px}$, con $\hat k = \operatorname{mediana}_i(\ell_i / L_{px,i})$ ajustado con las fotos propias a distancia fija; clase por umbrales $t_1,t_2$ (terciles de $\ell$ por fruta). Ver `docs/fases/04_modelado.md`.

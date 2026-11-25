@@ -51,7 +51,7 @@ Resumen; el protocolo completo (montaje, configuración de la cámara, obtenció
 | `regular` | Defectos leves (manchas pequeñas, golpe superficial, madurez irregular) |
 | `mala` | Podredumbre, moho, golpes profundos o deformación severa |
 
-**Tamaño**: `pequeno` / `mediano` / `grande`. Se calcula automáticamente con `fruitq.size` (terciles del diámetro equivalente normalizado **por tipo de fruta**) y se revisa manualmente.
+**Tamaño**: `pequeno` / `mediano` / `grande`. Se calcula con `fruitq.size`: la longitud en píxeles (lado mayor del rectángulo de área mínima) se convierte a centímetros con el factor de escala $\hat k$, y la clase sale de los terciles de `medida_cm` **por tipo de fruta**. Los parámetros están en `models/umbrales.json` y el método en `docs/fases/04_modelado.md`.
 
 ## Formato de `labels/anotaciones_propias.csv`
 

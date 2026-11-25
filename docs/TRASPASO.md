@@ -21,6 +21,9 @@ Documento de entrega del trabajo técnico a los integrantes que continúan el pr
 | Herramienta de etiquetado de recortes | Terminada | `app/etiquetar.py`, `docs/ETIQUETADO.md` |
 | Arquitectura e instalación | Documentadas | `docs/arquitectura.md`, `docs/instalacion.md` |
 | 45 fotografías propias (5 frutas × 3 estados × 3 tipos) y sus anotaciones | Terminado | `data/labels/anotaciones_propias.csv`, `docs/PLAN_DE_TRABAJO.md` §4 |
+| Etiquetado de recortes | Parcial: falta el integrante 2 | `data/labels/recortes_*.csv`, §4.2 |
+| Tamaño en centímetros y clase de tamaño | Terminado | `notebooks/06_tamano.ipynb`, `models/umbrales.json`, §4.4 |
+| Tabla de decisiones éticas (PI1) | Terminada | `docs/fases/07_etica_impactos.md` |
 
 **Resultados en test (2 540 imágenes, buena/mala):**
 
@@ -79,6 +82,8 @@ Se presentan en orden de dependencia.
 - Cada integrante etiqueta unos 200 recortes con `streamlit run app/etiquetar.py` (`docs/ETIQUETADO.md`).
 - Además, cada uno etiqueta 50 recortes de la parte de otro integrante, para calcular el acuerdo entre etiquetadores (κ de Cohen).
 - Resultado: archivos `data/labels/recortes_<nombre>.csv`.
+- **Estado:** Sebastián (parte 1) y Giuseppe (parte 3, más 50 recortes comunes de la parte 1) terminaron. Falta el integrante 2 (parte 2, más 50 recortes comunes de otra parte).
+- Acuerdo entre Sebastián y Giuseppe en los 50 recortes comunes: κ de Cohen = 0.78 (ponderado: 0.83) sobre los 20 recortes que ambos consideraron válidos. Los desacuerdos solo ocurren entre clases vecinas (`docs/fases/07_etica_impactos.md`, E5).
 
 ### 4.3 Clase `regular` (tres clases)
 

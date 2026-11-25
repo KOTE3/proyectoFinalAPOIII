@@ -13,12 +13,14 @@ Documento de coordinación interna: estado del proyecto, reparto de tareas, prot
 | Herramienta de etiquetado | Completa | `app/etiquetar.py`, `docs/ETIQUETADO.md` |
 | Modelos clásicos (regresión logística, SVM, Random Forest, XGBoost) | Completo (2 clases) | `notebooks/04_modelos_clasicos.ipynb` |
 | CNN desde cero y comparación con XGBoost | Completo (2 clases) | `notebooks/05_cnn_y_comparacion.ipynb` |
-| **Fotografías propias (45)** | **Pendiente** | Sección 4 de este documento |
-| **Etiquetado de recortes (clase `regular`)** | **Pendiente** | `docs/ETIQUETADO.md` |
-| Paso de 2 a 3 clases y estimación de tamaño en cm | Pendiente (depende de lo anterior) | — |
+| Fotografías propias (45) y sus anotaciones | Completo | Sección 4 de este documento, `data/labels/anotaciones_propias.csv` |
+| **Etiquetado de recortes (clase `regular`)** | **Parcial:** Sebastián y Giuseppe terminados; falta el integrante 2 | `docs/ETIQUETADO.md`, `data/labels/recortes_*.csv` |
+| Estimación de tamaño en cm y clase de tamaño | Completo | `notebooks/06_tamano.ipynb`, `models/umbrales.json` |
+| **Paso de 2 a 3 clases** | **Pendiente** (`docs/TRASPASO.md` §4.3) | — |
+| Evaluación en las fotos propias (generalización y atajo de nitidez) | Pendiente | `docs/fases/05_evaluacion.md` |
 | Aplicación Streamlit con cámara | Pendiente | `app/` |
 | Diagrama CRISP-DM propio y diagrama de arquitectura | Pendiente | `reports/figures/` |
-| Tabla de ética (PI1), matriz de impacto (PI2) | Borrador | `docs/fases/07_etica_impactos.md` |
+| Tabla de ética (PI1), matriz de impacto (PI2) | PI1 completa; PI2 en borrador | `docs/fases/07_etica_impactos.md` |
 | Informe IEEE (máx. 7 páginas) | Pendiente | `reports/informe/` |
 | Video (máx. 10 minutos) | Pendiente | — |
 
