@@ -70,7 +70,7 @@ La configuración se eligió por el F1 de **validación** (dropout 0.5). El F1 d
 
 $$\hat y = \text{buena si } p < t_1, \quad \text{regular si } t_1 \le p < t_2, \quad \text{mala si } p \ge t_2.$$
 
-**Datos de selección.** 362 recortes válidos de `mixed_quality` etiquetados por el grupo (188 `buena`, 112 `regular`, 62 `mala`), de 280 imágenes de origen. Cada recorte conserva la etiqueta de quien etiquetó su parte; los recortes comunes solo miden el acuerdo entre personas.
+**Datos de selección.** 569 recortes válidos de `mixed_quality` etiquetados por los tres integrantes (305 `buena`, 176 `regular`, 88 `mala`), de 400 imágenes de origen. Cada recorte conserva la etiqueta de quien etiquetó su parte; los recortes comunes solo miden el acuerdo entre personas.
 
 **Candidatos y esquema.**
 - Puntajes: $P(\text{mala} \mid x)$ de XGBoost, de la CNN y su promedio (ensamble); XGBoost con calibración de Platt e isotónica; y una variante que amplía el recorte hasta el diámetro típico de entrenamiento antes de extraer las características.
@@ -82,17 +82,18 @@ $$\hat y = \text{buena si } p < t_1, \quad \text{regular si } t_1 \le p < t_2, \
 
 | Candidato | F1-macro (CV) | Recall `regular` | Recall `mala` | mala → buena | κ ponderado |
 |---|---|---|---|---|---|
-| **XGBoost (elegido)** | **0.623** | 0.607 | 0.435 | 0.113 | **0.520** |
-| XGBoost + Platt | 0.623 | 0.607 | 0.435 | 0.113 | 0.520 |
-| XGBoost + isotónica | 0.611 | 0.580 | 0.452 | 0.145 | 0.490 |
-| CNN | 0.533 | 0.330 | 0.661 | 0.081 | 0.438 |
-| Ensamble | 0.578 | 0.321 | 0.823 | 0.097 | 0.495 |
-| XGBoost (recorte ampliado) | 0.488 | 0.304 | 0.500 | 0.161 | 0.342 |
+| **XGBoost (elegido)** | **0.616** | 0.562 | 0.455 | 0.102 | **0.506** |
+| XGBoost + Platt | 0.616 | 0.562 | 0.455 | 0.102 | 0.506 |
+| XGBoost + isotónica | 0.599 | 0.517 | 0.443 | 0.136 | 0.477 |
+| CNN | 0.547 | 0.415 | 0.659 | 0.080 | 0.436 |
+| Ensamble | 0.548 | 0.324 | 0.636 | 0.080 | 0.474 |
+| XGBoost (recorte ampliado) | 0.491 | 0.295 | 0.500 | 0.182 | 0.345 |
 
-- **Umbrales finales**, ajustados con los 362 recortes: $t_1 = 0.165$ y $t_2 = 0.985$. Se guardan en `models/umbrales.json`, sección `calidad`, junto con los coeficientes de Platt para mostrar la probabilidad.
-- XGBoost gana en F1 porque envía la fruta mala dudosa a `regular`; el ensamble detecta más fruta mala (recall 0.82), pero confunde la mayoría de las `regular` con `mala`. El error más costoso, aprobar como `buena` una fruta mala, es parecido en los dos (11 % y 10 %).
+- **Umbrales finales**, ajustados con los 569 recortes: $t_1 = 0.178$ y $t_2 = 0.986$. Se guardan en `models/umbrales.json`, sección `calidad`, junto con los coeficientes de Platt para mostrar la probabilidad.
+- XGBoost gana en F1 porque reconoce mejor la clase `regular` (recall 0.56 frente a 0.32 del ensamble). El ensamble detecta más fruta mala (0.64 frente a 0.46). El error más costoso, aprobar como `buena` una fruta mala, es parecido en los dos (10 % y 8 %).
+- Con los 362 recortes de los dos primeros etiquetadores, XGBoost también ganaba, con F1-macro 0.62 y desviación entre pliegues de 0.10. El tercer etiquetador no cambió la elección ni el F1 medio, pero redujo la desviación a 0.02.
 - Ampliar el recorte empeora todos los puntajes: la interpolación suaviza la imagen y altera las características de nitidez.
-- Como referencia del techo alcanzable, el acuerdo entre dos personas del grupo fue κ ponderado = 0.83; el del modelo es 0.52.
+- Como referencia del techo alcanzable, el acuerdo entre personas del grupo fue κ ponderado = 0.83 (Sebastián y Giuseppe) y 0.66 (Luis y Giuseppe); el del modelo es 0.51.
 
 ## Estimación de tamaño en centímetros (`notebooks/06_tamano.ipynb`)
 

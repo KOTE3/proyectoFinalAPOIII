@@ -38,27 +38,27 @@
     "puntaje": "XGBoost",
     "columna": "p_xgb",
     "preparacion": "kaggle_view: cuadrado de lado d / 0.436 reducido a 256 px",
-    "t1": 0.165359,
-    "t2": 0.9851,
+    "t1": 0.178221,
+    "t2": 0.985665,
     "clases": [
       "buena",
       "regular",
       "mala"
     ],
     "platt": {
-      "a": 0.348282,
-      "b": -1.693997
+      "a": 0.362982,
+      "b": -1.827738
     },
     "seleccion": {
-      "recortes": 362,
+      "recortes": 569,
       "esquema": "StratifiedGroupKFold(5) por imagen de origen",
-      "F1-macro": 0.623,
-      "recall buena": 0.787,
-      "recall regular": 0.607,
-      "recall mala": 0.435,
-      "mala → buena": 0.113,
-      "κ ponderado": 0.52,
-      "desv. F1 entre pliegues": 0.102
+      "F1-macro": 0.616,
+      "recall buena": 0.78,
+      "recall regular": 0.562,
+      "recall mala": 0.455,
+      "mala → buena": 0.102,
+      "κ ponderado": 0.506,
+      "desv. F1 entre pliegues": 0.021
     },
     "fotos_propias": {
       "fotos": 45,

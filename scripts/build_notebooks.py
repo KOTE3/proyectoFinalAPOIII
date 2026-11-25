@@ -1027,7 +1027,7 @@ cv_tabla.round(3)
 - La regla de decisión (mayor F1-macro en validación cruzada) se aplica en el código, antes de calcular cualquier resultado en las fotos propias.
 - Platt da exactamente el mismo resultado que el puntaje sin calibrar, como se anticipó; la isotónica, un poco menos.
 - La columna **mala → buena** es el error más costoso (fruta dañada que se aprueba). Hay que leerla junto con el F1: un candidato puede ganar en F1 enviando más fruta mala a `regular`, que es un error menos grave que aprobarla como buena.
-- Como referencia del techo alcanzable, el acuerdo entre dos personas del grupo fue κ ponderado = 0.83 (E5).
+- Como referencia del techo alcanzable, el acuerdo entre personas del grupo fue κ ponderado = 0.83 (Sebastián y Giuseppe) y 0.66 (Luis y Giuseppe) (E5).
 """),
         code("""
 col_elegido = CANDIDATOS[ELEGIDO][0]

@@ -4,8 +4,8 @@ Proyecto final del curso **Algoritmos y Programación III** (2026-2), Ingenierí
 
 #### Estado del proyecto: Activo
 
-- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas y matriz de impactos.
-- **En curso:** etiquetado del integrante 2, interfaz con cámara, diagramas, informe y video.
+- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, etiquetado de recortes, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas y matriz de impactos.
+- **En curso:** interfaz con cámara, diagramas, informe y video.
 
 ## Integrantes
 

@@ -95,9 +95,11 @@ XGBoost está **sobreconfiado**: P(mala | x) cae casi siempre cerca de 0 o de 1 
 ### En los recortes etiquetados (selección, validación cruzada agrupada)
 
 - Los recortes `regular` caen entre los `buena` y los `mala` en todos los puntajes (`calidad_puntajes_recortes.pdf`). Las medianas de $P(\text{mala} \mid x)$ con XGBoost son 0.01, 0.46 y 0.97: **el modelo binario ya ordena el deterioro**, aunque nunca vio la clase intermedia.
-- Con XGBoost y los umbrales $t_1 = 0.165$, $t_2 = 0.985$: F1-macro 0.62 (desviación entre pliegues 0.10), recall 0.79 en `buena`, 0.61 en `regular` y 0.44 en `mala`. El 11 % de la fruta mala se aprueba como `buena`; la mayor parte del resto del error en `mala` va a `regular` (`calidad_confusion.pdf`, izquierda).
+- Con XGBoost y los umbrales $t_1 = 0.178$, $t_2 = 0.986$, sobre 569 recortes de los tres etiquetadores: F1-macro 0.62 (desviación entre pliegues 0.02), recall 0.78 en `buena`, 0.56 en `regular` y 0.46 en `mala`. El 10 % de la fruta mala se aprueba como `buena`; la mayor parte del resto del error en `mala` va a `regular` (`calidad_confusion.pdf`, izquierda).
 
 ### En las fotos propias (evaluación única, 45 fotos)
+
+Al incorporar las etiquetas del tercer integrante, los umbrales pasaron de $t_1 = 0.165$, $t_2 = 0.985$ a $t_1 = 0.178$, $t_2 = 0.986$. Ninguna foto propia tiene un puntaje entre los umbrales anteriores y los nuevos, así que los resultados de esta sección no cambiaron.
 
 | Métrica | Valor |
 |---|---|

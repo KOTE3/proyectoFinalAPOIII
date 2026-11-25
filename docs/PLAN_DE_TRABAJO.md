@@ -14,7 +14,7 @@ Documento de coordinación interna: estado del proyecto, reparto de tareas, prot
 | Modelos clásicos (regresión logística, SVM, Random Forest, XGBoost) | Completo (2 clases) | `notebooks/04_modelos_clasicos.ipynb` |
 | CNN desde cero y comparación con XGBoost | Completo (2 clases) | `notebooks/05_cnn_y_comparacion.ipynb` |
 | Fotografías propias (45) y sus anotaciones | Completo | Sección 4 de este documento, `data/labels/anotaciones_propias.csv` |
-| **Etiquetado de recortes (clase `regular`)** | **Parcial:** Sebastián y Giuseppe terminados; falta el integrante 2 | `docs/ETIQUETADO.md`, `data/labels/recortes_*.csv` |
+| **Etiquetado de recortes (clase `regular`)** | Completo (569 recortes válidos); falta el par de acuerdo Sebastián–Luis | `docs/ETIQUETADO.md`, `data/labels/recortes_*.csv` |
 | Estimación de tamaño en cm y clase de tamaño | Completo | `notebooks/06_tamano.ipynb`, `models/umbrales.json` |
 | Paso de 2 a 3 clases | Completo | `notebooks/07_tres_clases.ipynb`, `models/umbrales.json` |
 | Evaluación en las fotos propias (generalización y atajo de nitidez) | Completo: el modelo no generaliza | `docs/fases/05_evaluacion.md` |

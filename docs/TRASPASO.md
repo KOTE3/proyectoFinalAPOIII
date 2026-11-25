@@ -21,7 +21,7 @@ Documento de entrega del trabajo técnico a los integrantes que continúan el pr
 | Herramienta de etiquetado de recortes | Terminada | `app/etiquetar.py`, `docs/ETIQUETADO.md` |
 | Arquitectura e instalación | Documentadas | `docs/arquitectura.md`, `docs/instalacion.md` |
 | 45 fotografías propias (5 frutas × 3 estados × 3 tipos) y sus anotaciones | Terminado | `data/labels/anotaciones_propias.csv`, `docs/PLAN_DE_TRABAJO.md` §4 |
-| Etiquetado de recortes | Parcial: falta el integrante 2 | `data/labels/recortes_*.csv`, §4.2 |
+| Etiquetado de recortes | Terminado; falta el par de acuerdo Sebastián–Luis | `data/labels/recortes_*.csv`, §4.2 |
 | Tamaño en centímetros y clase de tamaño | Terminado | `notebooks/06_tamano.ipynb`, `models/umbrales.json`, §4.4 |
 | Tabla de decisiones éticas (PI1) y matriz de impactos (PI2) | Terminadas | `docs/fases/07_etica_impactos.md` |
 | Clase `regular` (tres clases) y evaluación en las fotos propias | Terminado; el modelo no generaliza a las fotos propias | `notebooks/07_tres_clases.ipynb`, §4.3 |
@@ -83,8 +83,10 @@ Se presentan en orden de dependencia.
 - Cada integrante etiqueta unos 200 recortes con `streamlit run app/etiquetar.py` (`docs/ETIQUETADO.md`).
 - Además, cada uno etiqueta 50 recortes de la parte de otro integrante, para calcular el acuerdo entre etiquetadores (κ de Cohen).
 - Resultado: archivos `data/labels/recortes_<nombre>.csv`.
-- **Estado:** Sebastián (parte 1) y Giuseppe (parte 3, más 50 recortes comunes de la parte 1) terminaron. Falta el integrante 2 (parte 2, más 50 recortes comunes de otra parte).
-- Acuerdo entre Sebastián y Giuseppe en los 50 recortes comunes: κ de Cohen = 0.78 (ponderado: 0.83) sobre los 20 recortes que ambos consideraron válidos. Los desacuerdos solo ocurren entre clases vecinas (`docs/fases/07_etica_impactos.md`, E5).
+- **Estado:** los tres terminaron su parte: Sebastián (parte 1), Luis (parte 2, más 59 recortes comunes de la parte 3) y Giuseppe (parte 3, más 50 recortes comunes de la parte 1). Falta que Sebastián etiquete 50 recortes de la parte 2, para medir el acuerdo del par Sebastián–Luis.
+- Acuerdo sobre los recortes comunes que ambos consideraron válidos (`docs/fases/07_etica_impactos.md`, E5):
+  - Sebastián y Giuseppe: κ de Cohen = 0.78 (ponderado: 0.83) en 20 de 50 recortes; los desacuerdos solo ocurren entre clases vecinas.
+  - Luis y Giuseppe: κ = 0.66 (ponderado: 0.66) en 38 de 59 recortes; 2 de los 8 desacuerdos son entre `buena` y `mala`.
 
 ### 4.3 Clase `regular` (tres clases) (terminado)
 
@@ -110,10 +112,10 @@ $$\hat y = \begin{cases} \text{buena} & p < t_1 \\ \text{regular} & t_1 \le p < 
 7. Documentar los resultados en `docs/fases/04_modelado.md` y `docs/fases/05_evaluacion.md`.
 
 **Resultado** (`notebooks/07_tres_clases.ipynb`; código en `src/fruitq/quality.py`, pruebas en `tests/test_quality.py`):
-- Selección con 362 recortes (Sebastián y Giuseppe) y validación cruzada agrupada por imagen de origen. Gana XGBoost sin calibrar: F1-macro de tres clases 0.62. La calibración de Platt da el mismo F1, porque una transformación monótona no cambia las particiones posibles con dos umbrales; solo se usa para mostrar la probabilidad.
-- Umbrales: $t_1 = 0.165$, $t_2 = 0.985$, en `models/umbrales.json`, sección `calidad`.
+- Selección con 569 recortes de los tres integrantes y validación cruzada agrupada por imagen de origen. Gana XGBoost sin calibrar: F1-macro de tres clases 0.62, con desviación entre pliegues de 0.02. La calibración de Platt da el mismo F1, porque una transformación monótona no cambia las particiones posibles con dos umbrales; solo se usa para mostrar la probabilidad.
+- Umbrales: $t_1 = 0.178$, $t_2 = 0.986$, en `models/umbrales.json`, sección `calidad`.
 - **Fotos propias: F1-macro 0.25.** El modelo no generaliza: la nitidez actúa como atajo (al neutralizarla, la AUC buena vs mala sube de 0.55 a 0.91) y las fotos propias son mucho más oscuras que las de Kaggle. Detalle y mejoras propuestas en `docs/fases/05_evaluacion.md`.
-- Cuando el integrante 2 termine su etiquetado, basta volver a ejecutar `python scripts/build_notebooks.py calidad --run`: el notebook lee todos los `data/labels/recortes_*.csv`.
+- Si se agregan etiquetas, basta volver a ejecutar `python scripts/build_notebooks.py calidad --run`: el notebook lee todos los `data/labels/recortes_*.csv`.
 
 ### 4.4 Tamaño (terminado)
 
