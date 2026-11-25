@@ -88,11 +88,44 @@ Accuracy 0.965 · AUC 0.990. El F1 de test (0.964) coincide con el de validació
   - un brillo o una sombra en la piel de una naranja buena, que la red confunde con una mancha.
 
 ## Hallazgo para la 3.ª clase
-XGBoost está **sobreconfiado**: P(mala | x) cae casi siempre cerca de 0 o de 1 (`modelos_prob_mala.pdf`), así que la zona intermedia queda casi vacía. Para que los umbrales $t_1, t_2$ den una clase `regular` útil hay dos opciones:
-- **calibrar** las probabilidades (Platt o isotónica) con los recortes etiquetados;
-- usar un modelo con probabilidades más suaves (SVM calibrada o la CNN).
+XGBoost está **sobreconfiado**: P(mala | x) cae casi siempre cerca de 0 o de 1 (`modelos_prob_mala.pdf`), así que la zona intermedia queda casi vacía. Se resolvió con umbrales elegidos sobre los cuantiles del puntaje, no con calibración (ver la sección siguiente y la fase 4).
 
-Se decide cuando existan etiquetas de `regular`.
+## Tres clases de calidad — `notebooks/07_tres_clases.ipynb`
+
+### En los recortes etiquetados (selección, validación cruzada agrupada)
+
+- Los recortes `regular` caen entre los `buena` y los `mala` en todos los puntajes (`calidad_puntajes_recortes.pdf`). Las medianas de $P(\text{mala} \mid x)$ con XGBoost son 0.01, 0.46 y 0.97: **el modelo binario ya ordena el deterioro**, aunque nunca vio la clase intermedia.
+- Con XGBoost y los umbrales $t_1 = 0.165$, $t_2 = 0.985$: F1-macro 0.62 (desviación entre pliegues 0.10), recall 0.79 en `buena`, 0.61 en `regular` y 0.44 en `mala`. El 11 % de la fruta mala se aprueba como `buena`; la mayor parte del resto del error en `mala` va a `regular` (`calidad_confusion.pdf`, izquierda).
+
+### En las fotos propias (evaluación única, 45 fotos)
+
+| Métrica | Valor |
+|---|---|
+| F1-macro (3 clases) | **0.25** |
+| Recall `buena` / `regular` / `mala` | 0.20 / 0.27 / 0.27 |
+| Fruta mala aprobada como `buena` | 0 de 15 |
+| AUC buena vs mala (sin la clase `regular`): XGBoost / CNN / ensamble | 0.55 / 0.45 / 0.53 |
+
+| Fruta | Exactitud | Patrón de error |
+|---|---|---|
+| Banano | 0.00 | todas las `buena` y `regular` salen `mala`; las `mala` salen `regular` |
+| Guayaba | 0.20 | casi todo sale `regular` o `mala` |
+| Manzana | 0.53 | la única fruta con aciertos en las tres clases |
+
+**El sistema no generaliza a las fotos propias.** Ni siquiera la versión binaria, con su umbral original de 0.5, ordena las fotos `buena` y `mala` mejor que el azar. Por celular, los resultados son igual de bajos con el iPhone 13 y con el moto g(9) play (exactitud 0.20 en ambos); como cada fruta × calidad se tomó con un solo celular, ese desglose no separa el efecto de la cámara del de la calidad.
+
+### Causas (análisis de errores, sin modificar el modelo)
+
+1. **Atajo de nitidez, confirmado.** La nitidez de las fotos propias está muy por debajo de la de Kaggle (por ejemplo, `laplacian_var` mediana de 22 a 315 frente a 173 a 995). Al reemplazar solo la nitidez de cada foto por la mediana de Kaggle de su fruta, la AUC buena vs mala pasa de **0.55 a 0.91**. Esto confirma lo que sugería la ablación de la fase 4: el modelo usa la nitidez como señal de la cámara o la sesión de cada carpeta de Kaggle, no del defecto.
+2. **Brillo.** Las fotos propias son mucho más oscuras: V de HSV entre 78 y 118, frente a 114–179 en Kaggle. La causa probable es la exposición automática del celular, que compensa el fondo blanco. Por eso, aun sin el atajo, casi todas las fotos reciben P(mala) cercana a 1.
+3. **Definición de `buena`.** La fruta `buena` del grupo es fruta madura de mercado colombiano (banano con pecas, guayaba amarillenta). La `buena` de Kaggle es fruta más verde y uniforme (`eda_mosaico.pdf`).
+4. **Segmentación de las fotos comprimidas.** En las cinco `manzana_regular`, la máscara queda irregular y no cubre toda la fruta (`calidad_fotos_propias_entrada.pdf`).
+
+### Mejoras propuestas (deben validarse con fotos nuevas, no con estas 45)
+- Reentrenar XGBoost sin las dos características de nitidez: en validación de Kaggle solo cuesta 1.4 puntos de F1 (fase 4).
+- Normalizar el brillo usando el fondo blanco como referencia de exposición.
+- Incluir fotos propias en el entrenamiento, con partición por `id_fruta`.
+- Fijar la exposición de la cámara durante la toma, igual que la distancia.
 
 ## Tamaño en las fotos propias (45 fotos) — `notebooks/06_tamano.ipynb`
 
@@ -149,5 +182,7 @@ Cada combinación fruta × calidad se fotografió en una sesión distinta:
 - [x] CNN y comparación con los modelos clásicos
 - [x] Curvas de entrenamiento y validación de la CNN (¿sobreajuste?)
 - [x] Tamaño en centímetros y clase de tamaño en las fotos propias
-- [ ] Desempeño en las fotos propias (generalización y prueba del atajo de nitidez)
+- [x] Clase `regular` con umbrales elegidos en los recortes etiquetados
+- [x] Desempeño en las fotos propias (generalización y prueba del atajo de nitidez)
+- [ ] Reentrenamiento sin nitidez y con normalización de brillo, validado con fotos nuevas
 - [ ] Comparación con resultados de la literatura

@@ -28,11 +28,11 @@ Pérdida: entropía cruzada. El desbalanceo se compensa en el muestreo: cada
 
 from __future__ import annotations
 
-import cv2
 import numpy as np
 import torch
 from torch import nn
 
+from .quality import masked_tile
 from .segmentation import find_fruits
 
 TILE = 128
@@ -48,19 +48,9 @@ def fruit_tile(img_bgr: np.ndarray, size: int = TILE) -> tuple[np.ndarray, bool]
     """
     regs = find_fruits(img_bgr)
     if regs:
-        r = regs[0]
-        crop = r.crop.copy()
-        crop[r.mask == 0] = 0
-        ok = True
-    else:
-        crop, ok = img_bgr, False
-    h, w = crop.shape[:2]
-    side = max(h, w)
-    canvas = np.zeros((side, side, 3), np.uint8)
-    y0, x0 = (side - h) // 2, (side - w) // 2
-    canvas[y0:y0 + h, x0:x0 + w] = crop
-    tile = cv2.resize(canvas, (size, size), interpolation=cv2.INTER_AREA)
-    return cv2.cvtColor(tile, cv2.COLOR_BGR2RGB), ok
+        return masked_tile(regs[0].crop, regs[0].mask, size), True
+    full = np.full(img_bgr.shape[:2], 255, np.uint8)
+    return masked_tile(img_bgr, full, size), False
 
 
 def to_tensor(tiles_rgb: np.ndarray) -> torch.Tensor:

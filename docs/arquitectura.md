@@ -19,11 +19,11 @@ flowchart LR
     K --> L
 ```
 
-La rama de XGBoost es el modelo principal: tiene el mejor F1-macro en test (0.964). La CNN se conserva como modelo de deep learning comparado y como fuente de probabilidades menos extremas para la clase `regular`.
+La rama de XGBoost es el modelo principal: tiene el mejor F1-macro en test (0.964). La CNN se conserva como modelo de deep learning comparado; para la clase `regular`, sus probabilidades más suaves no superaron a XGBoost en la validación con recortes (fase 4).
 
 Estado de los bloques:
-- **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala, y la estimación de tamaño en centímetros (sección 5).
-- **Pendientes:** los umbrales de 3 clases (dependen de las etiquetas `regular`) y la interfaz.
+- **Implementados:** segmentación, características, XGBoost y CNN, con la tarea binaria buena/mala; los umbrales de 3 clases sobre la probabilidad de XGBoost (`fruitq.quality`, `models/umbrales.json`); y la estimación de tamaño en centímetros (sección 5).
+- **Pendientes:** la interfaz. Además, el clasificador no generaliza a las fotos propias (`docs/fases/05_evaluacion.md`); la aplicación debe advertirlo.
 
 ## 2. Segmentación (`src/fruitq/segmentation.py`)
 

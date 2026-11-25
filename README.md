@@ -4,8 +4,8 @@ Proyecto final del curso **Algoritmos y Programación III** (2026-2), Ingenierí
 
 #### Estado del proyecto: Activo
 
-- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, tamaño en centímetros, tabla de decisiones éticas y matriz de impactos.
-- **En curso:** etiquetado de recortes, clase `regular`, evaluación en las fotos propias, interfaz con cámara, diagramas, informe y video.
+- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas y matriz de impactos.
+- **En curso:** etiquetado del integrante 2, interfaz con cámara, diagramas, informe y video.
 
 ## Integrantes
 
@@ -68,10 +68,10 @@ El objetivo es ofrecer un criterio objetivo y reproducible que apoye a pequeños
 - ¿Se puede estimar el tamaño físico a partir de una sola foto?
 
 **Retos encontrados.**
-- Kaggle solo trae dos calidades. La clase `regular` se obtiene con umbrales sobre $P(\text{mala} \mid x)$, calibrados con recortes y fotos etiquetadas por el grupo.
+- Kaggle solo trae dos calidades. La clase `regular` se obtiene con umbrales sobre $P(\text{mala} \mid x)$, elegidos con los recortes etiquetados por el grupo.
 - Cerca del 30 % de las imágenes son casi duplicadas. Se agruparon por firma perceptual y por ráfagas de captura, y la partición train/val/test respeta esos grupos para evitar fuga de información.
 - Los fondos de Kaggle no son uniformes. Por eso la segmentación modela el fondo a partir del borde de cada imagen.
-- La nitidez de la imagen funciona como un posible atajo, porque refleja la cámara y no el defecto. Se analizó con un estudio de ablación.
+- La nitidez de la imagen funciona como un atajo, porque refleja la cámara y no el defecto. La ablación lo sugería, y las fotos propias lo confirmaron: con ellas el modelo no generaliza (F1-macro de 3 clases 0.25), y al neutralizar la nitidez la AUC buena vs mala sube de 0.55 a 0.91.
 - XGBoost está sobreconfiado: sus probabilidades caen casi siempre cerca de 0 o de 1, lo que dificulta definir la zona `regular`.
 
 **Resultados actuales (test, 2 540 imágenes, buena/mala).**

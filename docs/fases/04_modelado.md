@@ -10,7 +10,7 @@
 | ML clásico | XGBoost (400 árboles) | 57 características | `max_depth` ∈ {3, 5, 7}, `learning_rate` ∈ {0.05, 0.1} |
 | Deep learning | CNN pequeña desde cero (72 434 parámetros) | Recorte enmascarado 128×128 | `lr` ∈ {1e-3, 3e-4}, `dropout` ∈ {0.3, 0.5} |
 
-- **Tarea actual:** binaria buena (0) / mala (1). La clase `regular` se obtiene después con umbrales sobre P(mala | x), ver la sección "De 2 a 3 clases".
+- **Tarea de entrenamiento:** binaria buena (0) / mala (1). La clase `regular` se obtiene después con umbrales sobre P(mala | x), ver la sección "De 2 a 3 clases".
 - **Búsqueda:** `GridSearchCV` + `StratifiedGroupKFold(k=5)` sobre train, con métrica `f1_macro`. Los grupos de casi duplicados nunca se separan entre pliegues.
 - **Desbalanceo:** pesos de muestra $w_i = N / (K N_{e(i)})$ por estrato fruta×calidad.
 - Notebook: [`notebooks/04_modelos_clasicos.ipynb`](../../notebooks/04_modelos_clasicos.ipynb). Características: `scripts/extract_features.py` (17 264 imágenes, 0 errores, 0,2 % sin fruta detectada).
@@ -63,6 +63,36 @@ La configuración se eligió por el F1 de **validación** (dropout 0.5). El F1 d
 - La pérdida de train y la de val bajan juntas y casi no se separan (0.19 frente a 0.16): **no hay sobreajuste**. La val queda incluso un poco por debajo de train porque en train la red ve imágenes aumentadas y con dropout activo.
 - En la época 4 la configuración lr = 1e-3 / dropout 0.3 tiene un pico (F1 0.56). Es una inestabilidad típica de una tasa de aprendizaje alta en las primeras épocas, y se recupera en la siguiente.
 - El F1 seguía subiendo en la época 20, así que con más épocas (o una red algo más ancha) podría mejorar. No se hizo por el costo en CPU (~35 min por corrida).
+
+## De 2 a 3 clases (`notebooks/07_tres_clases.ipynb`)
+
+**Formulación.** Con un puntaje $p$ que crece con el deterioro, dos umbrales definen la clase:
+
+$$\hat y = \text{buena si } p < t_1, \quad \text{regular si } t_1 \le p < t_2, \quad \text{mala si } p \ge t_2.$$
+
+**Datos de selección.** 362 recortes válidos de `mixed_quality` etiquetados por el grupo (188 `buena`, 112 `regular`, 62 `mala`), de 280 imágenes de origen. Cada recorte conserva la etiqueta de quien etiquetó su parte; los recortes comunes solo miden el acuerdo entre personas.
+
+**Candidatos y esquema.**
+- Puntajes: $P(\text{mala} \mid x)$ de XGBoost, de la CNN y su promedio (ensamble); XGBoost con calibración de Platt e isotónica; y una variante que amplía el recorte hasta el diámetro típico de entrenamiento antes de extraer las características.
+- `StratifiedGroupKFold` con 5 pliegues, agrupado por imagen de origen. En cada pliegue, la calibración y los umbrales se ajustan con los otros cuatro.
+- Umbrales: búsqueda en rejilla sobre los cuantiles del propio puntaje (`fruitq.quality.fit_three_thresholds`), maximizando el F1-macro de tres clases.
+- **Regla de decisión, fijada de antemano:** mayor F1-macro en validación cruzada.
+
+**¿Por qué la calibración no cambia el resultado?** Una calibración monótona conserva el orden de las imágenes. Con dos umbrales, las particiones posibles dependen solo de ese orden, así que Platt (estrictamente creciente) alcanza exactamente el mismo F1, y la isotónica (creciente por tramos, con empates) solo puede perder particiones. La calibración sirve para **mostrar** una probabilidad interpretable, no para elegir mejores umbrales. La rejilla basada en cuantiles resuelve además el problema práctico de la sobreconfianza: tiene resolución donde están los datos, aunque se concentren cerca de 0 y de 1.
+
+| Candidato | F1-macro (CV) | Recall `regular` | Recall `mala` | mala → buena | κ ponderado |
+|---|---|---|---|---|---|
+| **XGBoost (elegido)** | **0.623** | 0.607 | 0.435 | 0.113 | **0.520** |
+| XGBoost + Platt | 0.623 | 0.607 | 0.435 | 0.113 | 0.520 |
+| XGBoost + isotónica | 0.611 | 0.580 | 0.452 | 0.145 | 0.490 |
+| CNN | 0.533 | 0.330 | 0.661 | 0.081 | 0.438 |
+| Ensamble | 0.578 | 0.321 | 0.823 | 0.097 | 0.495 |
+| XGBoost (recorte ampliado) | 0.488 | 0.304 | 0.500 | 0.161 | 0.342 |
+
+- **Umbrales finales**, ajustados con los 362 recortes: $t_1 = 0.165$ y $t_2 = 0.985$. Se guardan en `models/umbrales.json`, sección `calidad`, junto con los coeficientes de Platt para mostrar la probabilidad.
+- XGBoost gana en F1 porque envía la fruta mala dudosa a `regular`; el ensamble detecta más fruta mala (recall 0.82), pero confunde la mayoría de las `regular` con `mala`. El error más costoso, aprobar como `buena` una fruta mala, es parecido en los dos (11 % y 10 %).
+- Ampliar el recorte empeora todos los puntajes: la interpolación suaviza la imagen y altera las características de nitidez.
+- Como referencia del techo alcanzable, el acuerdo entre dos personas del grupo fue κ ponderado = 0.83; el del modelo es 0.52.
 
 ## Estimación de tamaño en centímetros (`notebooks/06_tamano.ipynb`)
 

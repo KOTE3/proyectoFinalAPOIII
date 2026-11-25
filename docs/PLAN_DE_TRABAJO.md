@@ -16,8 +16,8 @@ Documento de coordinación interna: estado del proyecto, reparto de tareas, prot
 | Fotografías propias (45) y sus anotaciones | Completo | Sección 4 de este documento, `data/labels/anotaciones_propias.csv` |
 | **Etiquetado de recortes (clase `regular`)** | **Parcial:** Sebastián y Giuseppe terminados; falta el integrante 2 | `docs/ETIQUETADO.md`, `data/labels/recortes_*.csv` |
 | Estimación de tamaño en cm y clase de tamaño | Completo | `notebooks/06_tamano.ipynb`, `models/umbrales.json` |
-| **Paso de 2 a 3 clases** | **Pendiente** (`docs/TRASPASO.md` §4.3) | — |
-| Evaluación en las fotos propias (generalización y atajo de nitidez) | Pendiente | `docs/fases/05_evaluacion.md` |
+| Paso de 2 a 3 clases | Completo | `notebooks/07_tres_clases.ipynb`, `models/umbrales.json` |
+| Evaluación en las fotos propias (generalización y atajo de nitidez) | Completo: el modelo no generaliza | `docs/fases/05_evaluacion.md` |
 | Aplicación Streamlit con cámara | Pendiente | `app/` |
 | Diagrama CRISP-DM propio y diagrama de arquitectura | Pendiente | `reports/figures/` |
 | Tabla de ética (PI1), matriz de impacto (PI2) | Completo | `docs/fases/07_etica_impactos.md` |
