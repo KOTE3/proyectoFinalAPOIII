@@ -80,6 +80,9 @@ Los pasos se ejecutan en orden. Los tiempos son aproximados, medidos en un port�
 | 7. Modelos clásicos | `python scripts/build_notebooks.py clasicos --run` | `models/clasico_mejor.joblib`, figuras `modelos_*` | ~15 min |
 | 8. CNN | `python scripts/train_cnn.py --tag lr1e-3_do0.5 --lr 1e-3 --dropout 0.5 --epochs 20` | `models/cnn_lr1e-3_do0.5.pt`, `reports/cnn/` | ~35 min |
 | 9. Comparación CNN vs. XGBoost | `python scripts/build_notebooks.py cnn --run` | `notebooks/05_cnn_y_comparacion.ipynb`, figuras `cnn_*` | ~3 min |
+| 10. Tamaño (requiere las fotos propias) | `python scripts/build_notebooks.py tamano --run` | `notebooks/06_tamano.ipynb`, sección `tamano` de `models/umbrales.json`, figuras `tamano_*` | ~1 min |
+| 11. Tres clases (requiere las fotos propias) | `python scripts/build_notebooks.py calidad --run` | `notebooks/07_tres_clases.ipynb`, sección `calidad` de `models/umbrales.json`, figuras `calidad_*` | ~1 min |
+| 12. Diagramas del informe | `python scripts/build_diagrams.py` | figuras `diagrama_crispdm` y `diagrama_arquitectura` | segundos |
 
 - Todos los procesos aleatorios usan la semilla `SEED = 42` (`src/fruitq/config.py`).
 - En Windows, si la consola muestra errores de codificación, se define antes `set PYTHONIOENCODING=utf-8`.

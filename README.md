@@ -4,8 +4,8 @@ Proyecto final del curso **Algoritmos y Programación III** (2026-2), Ingenierí
 
 #### Estado del proyecto: Activo
 
-- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, etiquetado de recortes, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas, matriz de impactos y aplicación con cámara.
-- **En curso:** diagramas, informe y video.
+- **Completado:** clasificación buena/mala con modelos clásicos y CNN, 45 fotos propias anotadas, etiquetado de recortes, clase `regular` con umbrales, evaluación en las fotos propias, tamaño en centímetros, tabla de decisiones éticas, matriz de impactos, aplicación con cámara y diagramas de CRISP-DM y de arquitectura.
+- **En curso:** informe y video.
 
 ## Integrantes
 
@@ -30,7 +30,7 @@ El objetivo es ofrecer un criterio objetivo y reproducible que apoye a pequeños
 
 ## Métodos utilizados
 
-- Metodología **CRISP-DM**.
+- Metodología **CRISP-DM**. El flujo concreto del proyecto, con sus iteraciones, está en `reports/figures/diagrama_crispdm.pdf`, y la arquitectura en `reports/figures/diagrama_arquitectura.pdf`.
 - Visión por computador:
   - segmentación por color en CIELab con k-means y Otsu;
   - GrabCut;

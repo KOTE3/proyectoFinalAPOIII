@@ -2,21 +2,22 @@
 
 ## 1. Flujo de inferencia
 
+Diagrama para el informe: `reports/figures/diagrama_arquitectura.pdf`, generado con `python scripts/build_diagrams.py`. Además del flujo de inferencia, muestra el entrenamiento fuera de línea y los artefactos de `models/` que lee la aplicación.
+
 ```mermaid
 flowchart LR
-    A[Foto de una fruta] --> B[Segmentación<br/>fruitq.segmentation]
-    B --> C[Fruta principal<br/>recorte + máscara]
+    A[Foto de una fruta<br/>cámara o archivo] --> B[Segmentación<br/>fruitq.segmentation]
+    B --> C[Fruta a la escala de<br/>entrenamiento<br/>fruitq.quality.kaggle_view]
     C --> D[57 características<br/>fruitq.features]
-    C --> E[Recorte 128×128<br/>fondo en negro<br/>fruitq.cnn.fruit_tile]
     D --> F[XGBoost<br/>models/clasico_mejor.joblib]
-    E --> G[CNN pequeña<br/>models/cnn_lr1e-3_do0.5.pt]
     F --> H["P(mala | x)"]
-    G --> H
     H --> I[Umbrales t₁, t₂<br/>buena / regular / mala]
-    C --> J[Lado mayor del<br/>rectángulo mínimo<br/>fruitq.size]
+    B --> J[Lado mayor del<br/>rectángulo mínimo<br/>fruitq.size]
     J --> K[cm = k · L<br/>pequeño / mediano / grande]
-    I --> L[Interfaz Streamlit]
+    I --> L[Interfaz Streamlit<br/>app/app.py]
     K --> L
+    B -.-> E[Recorte 128×128<br/>fondo en negro<br/>fruitq.cnn.fruit_tile]
+    E -.-> G[CNN pequeña<br/>models/cnn_lr1e-3_do0.5.pt<br/>solo comparación]
 ```
 
 La rama de XGBoost es el modelo principal: tiene el mejor F1-macro en test (0.964). La CNN se conserva como modelo de deep learning comparado; para la clase `regular`, sus probabilidades más suaves no superaron a XGBoost en la validación con recortes (fase 4).

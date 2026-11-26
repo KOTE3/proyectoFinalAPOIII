@@ -87,5 +87,5 @@ Desglose por etapa en las fotos originales (mediana por foto):
 
 - [x] Aplicación con cámara y carga de imagen
 - [x] Medición de latencia
-- [ ] Diagrama de arquitectura del sistema para el informe (integrante 3; el flujo está en `docs/arquitectura.md` §1)
+- [x] Diagrama de arquitectura del sistema para el informe (`reports/figures/diagrama_arquitectura.pdf`; `python scripts/build_diagrams.py`)
 - [ ] (Opcional) Simulación de línea de empaque con Raspberry Pi
